@@ -7,6 +7,7 @@ public abstract class Shape {
     public Shape(int begin, int end) {
         this.begin = begin;
         this.end = end;
+        return;
     }
 
     public abstract Boolean test(int point);
