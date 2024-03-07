@@ -11,19 +11,30 @@ public class Vector3 {
     }
 
     public Vector3 add(Vector3 v){
-        return new Vector3(this.x + v.getx(),this.y+v.gety(),this.z+v.getz());
+        return new Vector3(this.x + v.getX(),this.y+v.getY(),this.z+v.getZ());
     }
 
-    private int getz() {
+    private int getZ() {
         return this.z;
     }
 
-    private int gety() {
+    private int getY() {
         return this.y;
     }
 
-    private int getx() {
+    private int getX() {
         return this.x;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setZ(int z) {
+        this.z = z;
+    }
 }

@@ -8,14 +8,22 @@ public class Vector2 {
         this.y= b;
     }
     public Vector2 add(Vector2 v){
-        return new Vector2(this.x + v.getabs(), this.y + v.getord());
+        return new Vector2(this.x + v.getX(), this.y + v.getY());
     }
 
-    private int getord() {
+    public int getY() {
         return this.y;
     }
 
-    private int getabs() {
+    public int getX() {
         return this.x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }
