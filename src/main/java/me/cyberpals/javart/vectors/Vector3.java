@@ -14,6 +14,14 @@ public class Vector3 {
         return new Vector3(this.x + v.getX(),this.y+v.getY(),this.z+v.getZ());
     }
 
+    public Vector3 sub(Vector3 v){
+        return new Vector3(this.x - v.getX(), this.y - v.getY(), this.z-v.getZ());
+    }
+
+    public Vector3 mult(Vector3 v){
+        return new Vector3(this.x * v.getX(), this.y * v.getY(), this.z * v.getZ());
+    }
+
     private int getZ() {
         return this.z;
     }
@@ -37,4 +45,5 @@ public class Vector3 {
     public void setZ(int z) {
         this.z = z;
     }
+
 }

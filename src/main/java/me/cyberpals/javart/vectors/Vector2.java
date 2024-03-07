@@ -11,6 +11,14 @@ public class Vector2 {
         return new Vector2(this.x + v.getX(), this.y + v.getY());
     }
 
+    public Vector2 sub(Vector2 v){
+        return new Vector2(this.x - v.getX(), this.y - v.getY());
+    }
+
+    public Vector2 mult(Vector2 v){
+        return new Vector2(this.x * v.getX(), this.y * v.getY());
+    }
+
     public int getY() {
         return this.y;
     }
