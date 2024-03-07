@@ -1,48 +1,35 @@
 package me.cyberpals.javart.vectors;
 
-public class Vector3 {
-    private int x;
-    private int y;
-    private int z;
-    public Vector3(int a, int b, int c){
+public class Vector3<T> {
+    private T x;
+    private T y;
+    private T z;
+    public Vector3(T a, T b, T c){
         this.x= a;
         this.y=b;
         this.z=c;
     }
-
-    public Vector3 add(Vector3 v){
-        return new Vector3(this.x + v.getX(),this.y+v.getY(),this.z+v.getZ());
-    }
-
-    public Vector3 sub(Vector3 v){
-        return new Vector3(this.x - v.getX(), this.y - v.getY(), this.z-v.getZ());
-    }
-
-    public Vector3 mult(Vector3 v){
-        return new Vector3(this.x * v.getX(), this.y * v.getY(), this.z * v.getZ());
-    }
-
-    private int getZ() {
+    public T getZ() {
         return this.z;
     }
 
-    private int getY() {
+    public T getY() {
         return this.y;
     }
 
-    private int getX() {
+    public T getX() {
         return this.x;
     }
 
-    public void setX(int x) {
+    public void setX(T x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(T y) {
         this.y = y;
     }
 
-    public void setZ(int z) {
+    public void setZ(T z) {
         this.z = z;
     }
 
