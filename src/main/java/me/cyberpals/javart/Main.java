@@ -7,7 +7,10 @@ import me.cyberpals.javart.shapes.simple.Oval;
 import me.cyberpals.javart.shapes.simple.Rectangle;
 import me.cyberpals.javart.vectors.Vector2Int;
 
-public class Main {
+import javax.swing.*;
+
+public class Main extends JFrame {
+
     public static void main(String[] args) {
         Shape r1 = new Rectangle(
                 new Vector2Int(1, 1),
@@ -26,12 +29,12 @@ public class Main {
 
         Shape r4 = new Oval(
                 new Vector2Int(0, 0),
-                new Vector2Int(20, 20)
+                new Vector2Int(200, 20)
         );
 
         Shape it = new Union(new Intersection(r1, r2), r3);
 
-        r4.drawShape();
+        it.drawShape();
         it.showDetails();
     }
 }

@@ -1,5 +1,6 @@
 package me.cyberpals.javart.shapes.simple;
 
+import me.cyberpals.javart.vectors.Vector2Float;
 import me.cyberpals.javart.vectors.Vector2Int;
 
 public class Oval extends SimpleShape {
@@ -19,9 +20,9 @@ public class Oval extends SimpleShape {
 
         //step 1 - normalize point
         Vector2Int centeredPoint = point.sub(getBegin());
-        Vector2Int normalizedPoint = new Vector2Int(
-                (centeredPoint.getX() / (end.getX() - begin.getX())), //TODO - sub .5f
-                centeredPoint.getY() / (end.getY() - begin.getY())
+        Vector2Float normalizedPoint = new Vector2Float(
+                (((float) centeredPoint.getX()) * 2.f / (end.getX() - begin.getX())) - 1.f,
+                (((float) centeredPoint.getY()) * 2.f / (end.getY() - begin.getY())) - 1.f
         );
 
         //step 2 - verify if point in oval
