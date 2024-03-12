@@ -10,7 +10,7 @@ public class Intersection extends Operation {
 
     @Override
     public Boolean test(Vector2Int point) {
-        return child1.test(point) && (!child2.test(point));
+        return child1.test(point) && (child2.test(point));
     }
 
     @Override

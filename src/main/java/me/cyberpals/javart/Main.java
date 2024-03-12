@@ -5,6 +5,7 @@ import me.cyberpals.javart.shapes.operations.Intersection;
 import me.cyberpals.javart.shapes.operations.Union;
 import me.cyberpals.javart.shapes.simple.Oval;
 import me.cyberpals.javart.shapes.simple.Rectangle;
+import me.cyberpals.javart.shapes.simple.Triangle;
 import me.cyberpals.javart.vectors.Vector2Int;
 
 import javax.swing.*;
@@ -29,12 +30,17 @@ public class Main extends JFrame {
 
         Shape r4 = new Oval(
                 new Vector2Int(0, 0),
-                new Vector2Int(200, 20)
+                new Vector2Int(20, 20)
+        );
+
+        Shape r5 = new Triangle(
+                new Vector2Int(0, 0),
+                new Vector2Int(20, 20)
         );
 
         Shape it = new Union(new Intersection(r1, r2), r3);
 
-        it.drawShape();
-        it.showDetails();
+        r5.drawShape();
+        r5.showDetails();
     }
 }
