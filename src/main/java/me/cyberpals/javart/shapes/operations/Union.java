@@ -13,10 +13,6 @@ public class Union extends Operation {
         return child1.test(point) || child2.test(point);
     }
 
-    @Override
-    public void resize(Vector2Int dPos) {
-        //TODO
-    }
 
     @Override
     public void showDetails(int offset) {

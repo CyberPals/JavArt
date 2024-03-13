@@ -24,4 +24,16 @@ public abstract class Operation extends Shape {
         this.child1 = shape1;
         this.child2 = shape2;
     }
+
+    @Override
+    public void resize(Vector2Int dPos) {
+
+    }
+    
+    @Override
+    public void move(Vector2Int dPos) {
+        super.move(dPos);
+        child1.move(dPos);
+        child2.move(dPos);
+    }
 }
