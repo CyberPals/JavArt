@@ -35,4 +35,6 @@ public class Vector3<T> {
     public String toString(){
         return this.getX() + ","+ this.getY() + "," + this.getZ();
     }
+    public boolean equals(Vector3<T> other) {
+        return (this.x == other.getX()) && (this.y == other.getY()) && (this.z == other.getZ()) ;}
 }
