@@ -32,5 +32,7 @@ public class Vector3<T> {
     public void setZ(T z) {
         this.z = z;
     }
-
+    public String toString(){
+        return this.getX() + ","+ this.getY() + "," + this.getZ();
+    }
 }
