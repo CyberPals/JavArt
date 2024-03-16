@@ -15,8 +15,16 @@ public abstract class Shape {
         return begin;
     }
 
+    public void setBegin(Vector2Int begin) {
+        this.begin = begin;
+    }
+
     public Vector2Int getEnd() {
         return end;
+    }
+
+    public void setEnd(Vector2Int end) {
+        this.end = end;
     }
 
     public abstract Boolean test(Vector2Int point);
