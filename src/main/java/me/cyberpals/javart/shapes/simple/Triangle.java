@@ -32,11 +32,6 @@ public class Triangle extends SimpleShape {
     }
 
     @Override
-    public void resize(Vector2Int dPos) {
-        end = getEnd().add(dPos);
-    }
-
-    @Override
     public void showDetails(int offset) {
         System.out.println("  ".repeat(offset) + " + Triangle:(" + getBegin() + "," + getEnd() + ")");
     }

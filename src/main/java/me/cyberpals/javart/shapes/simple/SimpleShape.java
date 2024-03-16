@@ -7,4 +7,9 @@ public abstract class SimpleShape extends Shape {
     public SimpleShape(Vector2Int begin, Vector2Int end) {
         super(begin, end);
     }
+
+    @Override
+    public void resize(Vector2Int dPos) {
+        end = end.add(dPos);
+    }
 }

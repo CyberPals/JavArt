@@ -1,8 +1,8 @@
 package me.cyberpals.javart;
 
 import me.cyberpals.javart.shapes.Shape;
-import me.cyberpals.javart.shapes.operations.Intersection;
 import me.cyberpals.javart.shapes.operations.Union;
+import me.cyberpals.javart.shapes.operations.Xor;
 import me.cyberpals.javart.shapes.simple.Oval;
 import me.cyberpals.javart.shapes.simple.Rectangle;
 import me.cyberpals.javart.shapes.simple.Triangle;
@@ -20,7 +20,7 @@ public class Main extends JFrame {
 
         Shape r2 = new Rectangle(
                 new Vector2Int(2, 2),
-                new Vector2Int(7, 5)
+                new Vector2Int(12, 5)
         );
 
         Shape r3 = new Oval(
@@ -38,9 +38,9 @@ public class Main extends JFrame {
                 new Vector2Int(20, 20)
         );
 
-        Shape it = new Union(new Intersection(r1, r2), r3);
+        Shape it = new Union(new Xor(r1, r2), r3);
 
-        r5.drawShape();
-        r5.showDetails();
+        it.drawShape();
+        it.showDetails();
     }
 }

@@ -5,7 +5,7 @@ import me.cyberpals.javart.vectors.Vector2Int;
 
 import static java.lang.Math.abs;
 
-public class Rhombus extends SimpleShape{
+public class Rhombus extends SimpleShape {
     public Rhombus(Vector2Int begin, Vector2Int end) {
         super(begin, end);
     }
@@ -27,12 +27,7 @@ public class Rhombus extends SimpleShape{
         );
 
         //step 2 - verify if point in rhombus
-        return abs(normalizedPoint.getX()) + abs(normalizedPoint.getY()) <=1;
-        }
-
-    @Override
-    public void resize(Vector2Int dPos) {
-
+        return abs(normalizedPoint.getX()) + abs(normalizedPoint.getY()) <= 1;
     }
 
     @Override
