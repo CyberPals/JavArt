@@ -2,7 +2,9 @@ package me.cyberpals.javart.shapes;
 
 import me.cyberpals.javart.vectors.Vector2Int;
 
-public abstract class Shape {
+import java.io.Serializable;
+
+public abstract class Shape implements Serializable {
     protected Vector2Int begin;
     protected Vector2Int end;
 
