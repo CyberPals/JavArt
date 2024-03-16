@@ -11,13 +11,13 @@ public class Main extends JFrame {
 
     public static void main(String[] args) {
         Shape r1 = new Rectangle(
-                new Vector2Int(0, 0),
-                new Vector2Int(3, 3)
+                new Vector2Int(5, 5),
+                new Vector2Int(8, 8)
         );
 
         Shape r2 = new Rectangle(
-                new Vector2Int(2, 2),
-                new Vector2Int(5, 5)
+                new Vector2Int(7, 7),
+                new Vector2Int(10, 10)
         );
 
         Shape un = new Xor(r1, r2);

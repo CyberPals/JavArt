@@ -32,8 +32,8 @@ public abstract class Operation extends Shape {
         Vector2Float denom = new Vector2Float(1f / (corner2.getX() - corner1.getX()), 1f / (corner2.getY() - corner1.getY()));
 
         return new Vector2Int(
-                (int) ((shapePos.getX() - corner1.getX()) * (corner2.getX() + deltaPos.getX() - corner1.getX()) * denom.getX()),
-                (int) ((shapePos.getY() - corner1.getY()) * (corner2.getY() + deltaPos.getY() - corner1.getY()) * denom.getY())
+                (int) ((shapePos.getX() - corner1.getX()) * (corner2.getX() + deltaPos.getX() - corner1.getX()) * denom.getX()) + corner1.getX(),
+                (int) ((shapePos.getY() - corner1.getY()) * (corner2.getY() + deltaPos.getY() - corner1.getY()) * denom.getY()) + corner1.getY()
         );
     }
 
