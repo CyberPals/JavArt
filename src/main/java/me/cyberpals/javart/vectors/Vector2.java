@@ -1,6 +1,8 @@
 package me.cyberpals.javart.vectors;
 
-public class Vector2<T> {
+import java.io.Serializable;
+
+public class Vector2<T> implements Serializable {
     private T x;
     private T y;
 
