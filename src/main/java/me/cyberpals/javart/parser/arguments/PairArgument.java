@@ -2,17 +2,12 @@ package me.cyberpals.javart.parser.arguments;
 
 import me.cyberpals.javart.parser.arguments.elements.ParserElements;
 
-public abstract class PairArgument<T> implements ITokenArgument<T> {
+public abstract class PairArgument<T> implements ITokenArgument {
 
-    T value;
+    private T value;
 
     public PairArgument(T defaultValue) {
         this.value = defaultValue;
-    }
-
-    @Override
-    public T getValue() {
-        return value;
     }
 
     public abstract T interpret(String value);
@@ -22,12 +17,15 @@ public abstract class PairArgument<T> implements ITokenArgument<T> {
     public void execute(ParserElements elements) {
         if (!elements.isEnd()) {
             elements.next();
-            parse(getValue());
+            parse(value);
         } else if (elements.next().startsWith("-")) {
-            parse(getValue());
+            parse(value);
         } else {
-            parse(interpret(elements.next()));
+            parse(interpret(elements.peek()));
+            elements.next();
         }
 
     }
+
+    public abstract void parse(T value);
 }

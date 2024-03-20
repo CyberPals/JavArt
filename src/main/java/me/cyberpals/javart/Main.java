@@ -27,7 +27,7 @@ public class Main extends JFrame {
 
         parser.addArgument("-i", new SingleArgument() {
             @Override
-            public void parse(Boolean v) {
+            public void parse() {
                 System.out.println("Server starting...");
                 clientServerRmiShape.initializeServer(1099);
             }

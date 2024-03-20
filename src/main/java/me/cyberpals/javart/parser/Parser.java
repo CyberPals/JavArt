@@ -16,7 +16,7 @@ public class Parser {
         this.arguments = new HashMap<>();
     }
 
-    public <T> void addArgument(String name, ITokenArgument<T> arg) {
+    public void addArgument(String name, ITokenArgument arg) {
         arguments.put(name, arg);
     }
 
