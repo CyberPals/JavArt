@@ -1,6 +1,5 @@
 package me.cyberpals.javart.vectors;
 
-import me.cyberpals.javart.shapes.operations.Difference;
 import me.cyberpals.javart.shapes.operations.Intersection;
 import me.cyberpals.javart.shapes.simple.Rectangle;
 import org.junit.Test;
