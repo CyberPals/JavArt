@@ -9,8 +9,14 @@ public abstract class Shape implements Serializable {
     protected Vector2Int end;
 
     public Shape(Vector2Int begin, Vector2Int end) {
-        this.begin = begin;
-        this.end = end;
+        this.begin = new Vector2Int(
+                Math.min(begin.getX(), end.getX()),
+                Math.min(begin.getY(), end.getY())
+        );
+        this.end = new Vector2Int(
+                Math.max(begin.getX(), end.getX()),
+                Math.max(begin.getY(), end.getY())
+        );
     }
 
     public Vector2Int getBegin() {

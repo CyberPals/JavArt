@@ -43,7 +43,7 @@ public class SidePanel extends JPanel {
         Dimension d = getPreferredSize();
         for (int i = 0; i < d.width; i += 32) {
             for (int j = 0; j < d.height; j += 32) {
-                g.drawImage(manager.getPicture("example_0_0"), i, j, 32, 32, null);
+                g.drawImage(manager.getPicture("example_1_0"), i, j, 32, 32, null);
             }
         }
     }
