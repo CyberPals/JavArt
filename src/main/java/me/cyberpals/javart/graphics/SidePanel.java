@@ -17,11 +17,7 @@ public class SidePanel extends JPanel {
 
         try {
             manager = new PictureManager("/testing.png", 16, 16);
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    manager.addPicture("example_" + i + "_" + j, i, j);
-                }
-            }
+            manager.addExtendablePicture("example1", 0, 1, 4, 4, 4, 4);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,10 +37,6 @@ public class SidePanel extends JPanel {
 
         // Draw a picture for example
         Dimension d = getPreferredSize();
-        for (int i = 0; i < d.width; i += 32) {
-            for (int j = 0; j < d.height; j += 32) {
-                g.drawImage(manager.getPicture("example_1_0"), i, j, 32, 32, null);
-            }
-        }
+        manager.getPicture("example1").drawPicture(g, 0, 0, d.width, d.height - 28, 4);
     }
 }

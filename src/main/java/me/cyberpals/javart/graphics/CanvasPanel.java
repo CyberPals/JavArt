@@ -91,6 +91,9 @@ public class CanvasPanel extends JPanel {
         this.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
+                if (toolId == 1) {
+                    return;
+                }
                 super.mouseDragged(e);
                 current.setEnd(new Vector2Int(e.getX(), e.getY()));
                 repaint();

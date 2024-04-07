@@ -1,7 +1,11 @@
 package me.cyberpals.javart.graphics.pictures;
 
+import me.cyberpals.javart.graphics.pictures.types.ExtendablePicture;
+import me.cyberpals.javart.graphics.pictures.types.Picture;
+import me.cyberpals.javart.graphics.pictures.types.PictureBox;
+import me.cyberpals.javart.graphics.pictures.types.SimplePicture;
+
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +15,7 @@ import java.util.Map;
 public class PictureManager {
 
     //attributes for the atlas
-    Map<String, BufferedImage> atlas;
+    Map<String, Picture> atlas;
     BufferedImage atlasImage;
 
     // mains attributes
@@ -32,14 +36,15 @@ public class PictureManager {
     }
 
     public void addPicture(String name, int x, int y) {
-        atlas.put(name, atlasImage.getSubimage(x * width, y * height, width, height));
+        atlas.put(name, new SimplePicture(atlasImage.getSubimage(x * width, y * height, width, height)));
     }
 
-    public BufferedImage getPicture(String name) {
+    public void addExtendablePicture(String name, int x, int y, int top, int right, int bottom, int left) {
+        BufferedImage picture = atlasImage.getSubimage(x * width, y * height, width, height);
+        atlas.put(name, new ExtendablePicture(picture, new PictureBox(top, left, right, bottom)));
+    }
+
+    public Picture getPicture(String name) {
         return atlas.get(name);
-    }
-
-    public ImageIcon getIcon(String name) {
-        return new ImageIcon(getPicture(name));
     }
 }
