@@ -44,9 +44,11 @@ public class MainFrame extends JFrame {
                 if (e.getKeyChar() == 'a') {
                     canvas.toolId = 0;
                     System.out.println("Tool: Draw");
+                    setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
                 } else if (e.getKeyChar() == 'z') {
                     canvas.toolId = 1;
                     System.out.println("Tool: XOR");
+                    setCursor(new Cursor(Cursor.HAND_CURSOR));
                 }
             }
         });

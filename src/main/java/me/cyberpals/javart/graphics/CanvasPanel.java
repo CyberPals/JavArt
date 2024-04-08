@@ -3,7 +3,7 @@ package me.cyberpals.javart.graphics;
 import me.cyberpals.javart.MainFrame;
 import me.cyberpals.javart.graphics.tools.ToolManager;
 import me.cyberpals.javart.shapes.Shape;
-import me.cyberpals.javart.shapes.operations.Xor;
+import me.cyberpals.javart.shapes.operations.Intersection;
 import me.cyberpals.javart.shapes.simple.Oval;
 import me.cyberpals.javart.vectors.Vector2Int;
 
@@ -64,7 +64,7 @@ public class CanvasPanel extends JPanel {
                                 id = 0;
                                 shapes.remove(s1);
                                 shapes.remove(s2);
-                                shapes.add(new Xor(s1, s2));
+                                shapes.add(new Intersection(s1, s2));
                                 System.out.println("Shape 2 selected");
                                 repaint();
                                 break;
