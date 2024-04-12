@@ -2,6 +2,7 @@ package me.cyberpals.javart.graphics;
 
 import me.cyberpals.javart.MainFrame;
 import me.cyberpals.javart.graphics.pictures.PictureManager;
+import me.cyberpals.javart.graphics.tools.ToolManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,11 +10,17 @@ import java.awt.*;
 public class SidePanel extends JPanel {
     MainFrame instance;
     PictureManager manager;
+    ToolManager toolManager;
 
-    public SidePanel(MainFrame instance) {
+    public SidePanel(MainFrame instance, ToolManager toolManager) {
         super();
 
         this.instance = instance;
+        this.toolManager = toolManager;
+
+        this.setLayout(new GridLayout(0, 2));
+
+        setupButtons();
 
         try {
             manager = new PictureManager("/testing.png", 16, 16);
@@ -21,6 +28,10 @@ public class SidePanel extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupButtons() {
+
     }
 
     @Override
@@ -37,6 +48,7 @@ public class SidePanel extends JPanel {
 
         // Draw a picture for example
         Dimension d = getPreferredSize();
-        manager.getPicture("example1").drawPicture(g, 0, 0, d.width, d.height - 28, 4);
+        int topBar = instance.getInsets().top;
+        manager.getPicture("example1").drawPicture(g, 0, 0, d.width, d.height - topBar, 4);
     }
 }

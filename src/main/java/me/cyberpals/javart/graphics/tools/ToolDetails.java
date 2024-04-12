@@ -17,6 +17,8 @@ public enum ToolDetails {
     UNION,
     XOR,
 
-    // remove
-    REMOVE
+    // one click
+    REMOVE,
+    SAVE,
+    LOAD,
 }

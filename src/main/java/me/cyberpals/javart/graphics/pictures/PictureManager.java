@@ -30,6 +30,7 @@ public class PictureManager {
 
         // generate empty atlas
         atlas = new HashMap<>();
+        System.out.println(getClass().getResource("/"));
         InputStream is = getClass().getResourceAsStream(path);
         assert is != null;
         atlasImage = ImageIO.read(is);

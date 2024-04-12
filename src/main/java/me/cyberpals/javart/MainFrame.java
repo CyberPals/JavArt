@@ -3,27 +3,43 @@ package me.cyberpals.javart;
 import me.cyberpals.javart.graphics.CanvasPanel;
 import me.cyberpals.javart.graphics.OptionPanel;
 import me.cyberpals.javart.graphics.SidePanel;
+import me.cyberpals.javart.graphics.pictures.PictureManager;
 import me.cyberpals.javart.graphics.tools.ToolManager;
 import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
 import me.cyberpals.javart.parser.Parser;
+import me.cyberpals.javart.parser.arguments.PairArgument;
 import me.cyberpals.javart.parser.arguments.SingleArgument;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 
 public class MainFrame extends JFrame {
 
+    //panels
     CanvasPanel canvas;
+    SidePanel sidePanel;
+
+
     ToolManager toolManager;
+
+    PictureManager pictureManager;
 
     public MainFrame() {
         super("JavArt");
 
-        toolManager = new ToolManager();
+        try {
+            pictureManager = new PictureManager("/testing.png", 16, 16);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        toolManager = new ToolManager(pictureManager);
 
         canvas = new CanvasPanel(this, toolManager);
+        sidePanel = new SidePanel(this, toolManager);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(800, 600);
@@ -32,7 +48,7 @@ public class MainFrame extends JFrame {
 
         this.setLayout(new BorderLayout());
         this.add(new OptionPanel(this), BorderLayout.SOUTH);
-        this.add(new SidePanel(this), BorderLayout.WEST);
+        this.add(sidePanel, BorderLayout.WEST);
         this.add(canvas, BorderLayout.CENTER);
 
         this.setLocationRelativeTo(null);
@@ -65,6 +81,18 @@ public class MainFrame extends JFrame {
             public void parse() {
                 System.out.println("Server starting...");
                 clientServerRmiShape.initializeServer(1099);
+            }
+        });
+
+        parser.addArgument("-s", new PairArgument<>("Baptiste") {
+            @Override
+            public String interpret(String value) {
+                return value;
+            }
+
+            @Override
+            public void parse(String value) {
+                System.out.println("Bonsoir " + value + " !");
             }
         });
 

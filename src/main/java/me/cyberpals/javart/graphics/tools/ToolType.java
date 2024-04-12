@@ -4,5 +4,5 @@ public enum ToolType {
     MOVE,
     SHAPE,
     COMBINE,
-    REMOVE
+    CLICK
 }

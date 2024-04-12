@@ -37,6 +37,12 @@ public abstract class Shape implements Serializable {
 
     public abstract Boolean test(Vector2Int point);
 
+    public Boolean inBound(Vector2Int point) {
+        return (point.getX() >= begin.getX() && point.getX() <= end.getX() &&
+                point.getY() >= begin.getY() && point.getY() <= end.getY());
+    }
+
+
     public abstract void resize(Vector2Int dPos);
 
     public abstract void showDetails(int offset);
