@@ -12,8 +12,6 @@ import me.cyberpals.javart.parser.arguments.SingleArgument;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 public class MainFrame extends JFrame {
@@ -21,17 +19,19 @@ public class MainFrame extends JFrame {
     //panels
     CanvasPanel canvas;
     SidePanel sidePanel;
+    OptionPanel optionPanel;
 
 
     ToolManager toolManager;
-
     PictureManager pictureManager;
 
     public MainFrame() {
         super("JavArt");
 
+        //setup diferent panels
         try {
             pictureManager = new PictureManager("/testing.png", 16, 16);
+            setupTextures();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -40,6 +40,11 @@ public class MainFrame extends JFrame {
 
         canvas = new CanvasPanel(this, toolManager);
         sidePanel = new SidePanel(this, toolManager);
+        optionPanel = new OptionPanel(this, toolManager);
+
+        toolManager.setCanvas(canvas);
+
+        //setup frame
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(800, 600);
@@ -47,27 +52,11 @@ public class MainFrame extends JFrame {
         this.setVisible(true);
 
         this.setLayout(new BorderLayout());
-        this.add(new OptionPanel(this), BorderLayout.SOUTH);
+        this.add(optionPanel, BorderLayout.SOUTH);
         this.add(sidePanel, BorderLayout.WEST);
         this.add(canvas, BorderLayout.CENTER);
 
         this.setLocationRelativeTo(null);
-
-        this.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                super.keyPressed(e);
-                if (e.getKeyChar() == 'a') {
-                    canvas.toolId = 0;
-                    System.out.println("Tool: Draw");
-                    setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
-                } else if (e.getKeyChar() == 'z') {
-                    canvas.toolId = 1;
-                    System.out.println("Tool: XOR");
-                    setCursor(new Cursor(Cursor.HAND_CURSOR));
-                }
-            }
-        });
         this.pack();
     }
 
@@ -102,5 +91,14 @@ public class MainFrame extends JFrame {
         } else {
             new MainFrame();
         }
+    }
+
+    private void setupTextures() {
+        this.pictureManager.addExtendablePicture("example1", 0, 1, 4, 4, 4, 4);
+        this.pictureManager.addExtendablePicture("example2", 1, 0, 4, 4, 4, 4);
+        this.pictureManager.addExtendablePicture("t1", 0, 2, 4, 4, 4, 4);
+        this.pictureManager.addExtendablePicture("t2", 1, 2, 4, 4, 4, 4);
+        this.pictureManager.addExtendablePicture("t3", 2, 2, 4, 4, 4, 4);
+        this.pictureManager.addExtendablePicture("t4", 3, 2, 4, 4, 4, 4);
     }
 }

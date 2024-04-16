@@ -1,17 +1,20 @@
 package me.cyberpals.javart.graphics;
 
 import me.cyberpals.javart.MainFrame;
+import me.cyberpals.javart.graphics.tools.ToolManager;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class OptionPanel extends JPanel {
     MainFrame instance;
+    ToolManager toolManager;
 
-    public OptionPanel(MainFrame instance) {
+    public OptionPanel(MainFrame instance, ToolManager toolManager) {
         super();
 
         this.instance = instance;
+        this.toolManager = toolManager;
     }
 
     @Override
@@ -24,6 +27,6 @@ public class OptionPanel extends JPanel {
         super.paint(g);
 
         g.setColor(Color.PINK);
-        g.fillRect(0, 0, getPreferredSize().width, getPreferredSize().height);
+        toolManager.getPictureManager().getPicture("example2").drawPicture(g, 0, 0, getPreferredSize().width, getPreferredSize().height, 4);
     }
 }
