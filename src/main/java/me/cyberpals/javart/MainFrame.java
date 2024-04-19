@@ -9,6 +9,11 @@ import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
 import me.cyberpals.javart.parser.Parser;
 import me.cyberpals.javart.parser.arguments.PairArgument;
 import me.cyberpals.javart.parser.arguments.SingleArgument;
+import me.cyberpals.javart.serialisation.SaveManager;
+import me.cyberpals.javart.shapes.Shape;
+import me.cyberpals.javart.shapes.operations.Union;
+import me.cyberpals.javart.shapes.simple.Rectangle;
+import me.cyberpals.javart.vectors.Vector2Int;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,7 +78,7 @@ public class MainFrame extends JFrame {
             }
         });
 
-        parser.addArgument("-s", new PairArgument<>("Baptiste") {
+        parser.addArgument("-ts", new PairArgument<>("test") {
             @Override
             public String interpret(String value) {
                 return value;
@@ -81,7 +86,47 @@ public class MainFrame extends JFrame {
 
             @Override
             public void parse(String value) {
-                System.out.println("Bonsoir " + value + " !");
+                SaveManager sm = new SaveManager();
+
+                Shape t1 = new Rectangle(
+                        new Vector2Int(0, 0),
+                        new Vector2Int(4, 4)
+                );
+                Shape t2 = new Rectangle(
+                        new Vector2Int(2, 2),
+                        new Vector2Int(6, 6)
+                );
+                System.out.println("save following shape");
+                Shape u = new Union(t1, t2);
+                u.drawShape();
+                u.showDetails();
+                try {
+                    sm.saveShape(u, value);
+                } catch (IOException e) {
+                    System.out.println("error while saving the shape");
+                }
+            }
+        });
+
+        parser.addArgument("-tl", new PairArgument<>("test") {
+            @Override
+            public String interpret(String value) {
+                return value;
+            }
+
+            @Override
+            public void parse(String value) {
+                SaveManager sm = new SaveManager();
+                System.out.println("load shape");
+                try {
+                    Shape p = sm.loadShape(value);
+                    p.drawShape();
+                    p.showDetails();
+                } catch (IOException e) {
+                    System.out.println("file not found");
+                } catch (ClassNotFoundException e) {
+                    System.out.println("unkown error");
+                }
             }
         });
 
