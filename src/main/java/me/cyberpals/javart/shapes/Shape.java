@@ -9,8 +9,14 @@ public abstract class Shape implements Serializable {
     protected Vector2Int end;
 
     public Shape(Vector2Int begin, Vector2Int end) {
-        this.begin = begin;
-        this.end = end;
+        this.begin = new Vector2Int(
+                Math.min(begin.getX(), end.getX()),
+                Math.min(begin.getY(), end.getY())
+        );
+        this.end = new Vector2Int(
+                Math.max(begin.getX(), end.getX()),
+                Math.max(begin.getY(), end.getY())
+        );
     }
 
     public Vector2Int getBegin() {
@@ -30,6 +36,12 @@ public abstract class Shape implements Serializable {
     }
 
     public abstract Boolean test(Vector2Int point);
+
+    public Boolean inBound(Vector2Int point) {
+        return (point.getX() >= begin.getX() && point.getX() <= end.getX() &&
+                point.getY() >= begin.getY() && point.getY() <= end.getY());
+    }
+
 
     public abstract void resize(Vector2Int dPos);
 

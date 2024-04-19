@@ -32,7 +32,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>me.cyberpals.javart.Main</mainClass>
+                            <mainClass>me.cyberpals.javart.MainFrame</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
