@@ -1,6 +1,7 @@
 package me.cyberpals.javart.graphics.tools;
 
 import me.cyberpals.javart.graphics.pictures.PictureManager;
+import me.cyberpals.javart.graphics.pictures.types.Picture;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.shapes.operations.Difference;
 import me.cyberpals.javart.shapes.operations.Intersection;
@@ -28,7 +29,7 @@ public class ToolManager {
     Shape currentShape;
     Vector2Int deltaPos;
 
-    JPanel canvas;
+    JPanel canvas, optionPanel;
 
     // atributes to help events
 
@@ -40,12 +41,15 @@ public class ToolManager {
     public ToolManager(PictureManager pictureManager) {
         this.pictureManager = pictureManager;
         shapes = new ArrayList<>();
-        setTool(ToolDetails.MOVE);
+        setTool(ToolDetails.OVAL);
     }
 
 
     private void resetDatas() {
-
+        current = null;
+        s1 = null;
+        s2 = null;
+        fuseIndex = 0;
     }
 
     public void setTool(ToolDetails toolDetails) {
@@ -71,12 +75,17 @@ public class ToolManager {
             case XOR:
                 toolType = ToolType.COMBINE;
                 break;
+            case SELECT:
             case REMOVE:
             case SAVE:
             case LOAD:
+            case RMI_SAVE:
+            case RMI_LOAD:
                 toolType = ToolType.CLICK;
                 break;
         }
+        if (optionPanel != null)
+            optionPanel.repaint();
     }
 
     //methods for handling mouse events
@@ -93,7 +102,7 @@ public class ToolManager {
                 //create new shape
                 switch (toolDetails) {
                     case OVAL:
-                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
+                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX() + 1, e.getY() + 1));
                         break;
                     case RECTANGLE:
                         current = new Rectangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
@@ -167,6 +176,29 @@ public class ToolManager {
     }
 
     // methods for controlling shapes
+    public Picture getToolPics() {
+        switch (toolDetails) {
+            case OVAL:
+                return pictureManager.getPicture("t1");
+            case RECTANGLE:
+                return pictureManager.getPicture("t2");
+            case RHOMBUS:
+                return pictureManager.getPicture("t3");
+            case TRIANGLE:
+                return pictureManager.getPicture("t4");
+            case DIFERENCE:
+                return pictureManager.getPicture("example1");
+            case INTERSECT:
+                return pictureManager.getPicture("example1");
+            case UNION:
+                return pictureManager.getPicture("example1");
+            case XOR:
+                return pictureManager.getPicture("t5");
+            case MOVE:
+                return pictureManager.getPicture("example1");
+        }
+        return null;
+    }
 
     public void updateCurrentAddingShape() {
 
@@ -221,6 +253,10 @@ public class ToolManager {
 
     public void setCanvas(JPanel canvas) {
         this.canvas = canvas;
+    }
+
+    public void setOptionPanel(JPanel optionPanel) {
+        this.optionPanel = optionPanel;
     }
 
     public PictureManager getPictureManager() {

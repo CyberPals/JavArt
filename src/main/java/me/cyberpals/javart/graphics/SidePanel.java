@@ -43,39 +43,39 @@ public class SidePanel extends JPanel {
 
         //shapes
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("button"),
                 toolManager.getPictureManager().getPicture("t1"),
                 toolManager,
                 ToolDetails.OVAL
         ));
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("button"),
                 toolManager.getPictureManager().getPicture("t2"),
                 toolManager,
                 ToolDetails.RECTANGLE
         ));
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("button"),
                 toolManager.getPictureManager().getPicture("t3"),
                 toolManager,
                 ToolDetails.RHOMBUS
         ));
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("button"),
                 toolManager.getPictureManager().getPicture("t4"),
                 toolManager,
                 ToolDetails.TRIANGLE
         ));
         //combine
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("example1"),
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("button"),
+                toolManager.getPictureManager().getPicture("t5"),
                 toolManager,
                 ToolDetails.XOR
         ));
         // tools
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("button"),
                 toolManager.getPictureManager().getPicture("example1"),
                 toolManager,
                 ToolDetails.MOVE

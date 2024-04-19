@@ -96,9 +96,11 @@ public class MainFrame extends JFrame {
     private void setupTextures() {
         this.pictureManager.addExtendablePicture("example1", 0, 1, 4, 4, 4, 4);
         this.pictureManager.addExtendablePicture("example2", 1, 0, 4, 4, 4, 4);
-        this.pictureManager.addExtendablePicture("t1", 0, 2, 4, 4, 4, 4);
-        this.pictureManager.addExtendablePicture("t2", 1, 2, 4, 4, 4, 4);
-        this.pictureManager.addExtendablePicture("t3", 2, 2, 4, 4, 4, 4);
-        this.pictureManager.addExtendablePicture("t4", 3, 2, 4, 4, 4, 4);
+        this.pictureManager.addPicture("t1", 0, 2);
+        this.pictureManager.addPicture("t2", 1, 2);
+        this.pictureManager.addPicture("t3", 2, 2);
+        this.pictureManager.addPicture("t4", 3, 2);
+        this.pictureManager.addPicture("t5", 0, 3);
+        this.pictureManager.addExtendablePicture("button", 2, 0, 4, 4, 4, 4);
     }
 }

@@ -18,7 +18,10 @@ public enum ToolDetails {
     XOR,
 
     // one click
+    SELECT,
     REMOVE,
     SAVE,
     LOAD,
+    RMI_SAVE,
+    RMI_LOAD
 }

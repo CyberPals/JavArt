@@ -15,6 +15,8 @@ public class OptionPanel extends JPanel {
 
         this.instance = instance;
         this.toolManager = toolManager;
+
+        toolManager.setOptionPanel(this);
     }
 
     @Override
@@ -28,5 +30,6 @@ public class OptionPanel extends JPanel {
 
         g.setColor(Color.PINK);
         toolManager.getPictureManager().getPicture("example2").drawPicture(g, 0, 0, getPreferredSize().width, getPreferredSize().height, 4);
+        toolManager.getToolPics().drawPicture(g, 0, 0, 50, 50);
     }
 }
