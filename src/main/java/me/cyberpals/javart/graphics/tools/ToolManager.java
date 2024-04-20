@@ -2,6 +2,8 @@ package me.cyberpals.javart.graphics.tools;
 
 import me.cyberpals.javart.graphics.pictures.PictureManager;
 import me.cyberpals.javart.graphics.pictures.types.Picture;
+import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
+import me.cyberpals.javart.serialisation.SaveManager;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.shapes.operations.Difference;
 import me.cyberpals.javart.shapes.operations.Intersection;
@@ -16,6 +18,7 @@ import me.cyberpals.javart.vectors.Vector2Int;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ToolManager {
@@ -37,11 +40,19 @@ public class ToolManager {
     Shape s1, s2;
     int fuseIndex = 0;
 
+    //attributes for save purpose
+
+    SaveManager saveManager;
+    ClientServerRmiShape clientRmiShape;
 
     public ToolManager(PictureManager pictureManager) {
         this.pictureManager = pictureManager;
         shapes = new ArrayList<>();
         setTool(ToolDetails.OVAL);
+
+        //setup managers
+        saveManager = new SaveManager();
+        clientRmiShape = new ClientServerRmiShape();
     }
 
 
@@ -171,6 +182,32 @@ public class ToolManager {
                 }
                 break;
             case CLICK:
+
+                switch (toolDetails) {
+                    case SAVE:
+                        Shape s = getShape(new Vector2Int(e.getX(), e.getY()));
+                        try {
+                            saveManager.saveShape(s, "file");
+                            JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        break;
+                    case LOAD:
+                        try {
+                            Shape current = saveManager.loadShape("file");
+                            //reloacate to current position
+                            current.move(new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY()));
+                            shapes.add(current);
+                            canvas.repaint();
+                            JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
+                        } catch (ClassNotFoundException ex) {
+                            JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        break;
+                }
                 break;
         }
     }
@@ -179,23 +216,27 @@ public class ToolManager {
     public Picture getToolPics() {
         switch (toolDetails) {
             case OVAL:
-                return pictureManager.getPicture("t1");
+                return pictureManager.getPicture("Oval");
             case RECTANGLE:
-                return pictureManager.getPicture("t2");
+                return pictureManager.getPicture("Rectangle");
             case RHOMBUS:
-                return pictureManager.getPicture("t3");
+                return pictureManager.getPicture("Rhombus");
             case TRIANGLE:
-                return pictureManager.getPicture("t4");
+                return pictureManager.getPicture("Triangle");
             case DIFERENCE:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Difference");
             case INTERSECT:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Intersection");
             case UNION:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Union");
             case XOR:
-                return pictureManager.getPicture("t5");
+                return pictureManager.getPicture("Xor");
             case MOVE:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Move");
+            case SAVE:
+                return pictureManager.getPicture("Save_local");
+            case LOAD:
+                return pictureManager.getPicture("Load_local");
         }
         return null;
     }
@@ -264,6 +305,7 @@ public class ToolManager {
     }
 
     public void paintData(Graphics g) {
+        g.setColor(Color.decode("#050505"));
         for (Shape shape : shapes) {
             for (int i = shape.getBegin().getX(); i < shape.getEnd().getX(); i++) {
                 for (int j = shape.getBegin().getY(); j < shape.getEnd().getY(); j++) {

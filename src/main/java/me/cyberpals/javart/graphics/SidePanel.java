@@ -43,42 +43,72 @@ public class SidePanel extends JPanel {
 
         //shapes
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("button"),
-                toolManager.getPictureManager().getPicture("t1"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Oval"),
                 toolManager,
                 ToolDetails.OVAL
         ));
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("button"),
-                toolManager.getPictureManager().getPicture("t2"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Rectangle"),
                 toolManager,
                 ToolDetails.RECTANGLE
         ));
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("button"),
-                toolManager.getPictureManager().getPicture("t3"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Rhombus"),
                 toolManager,
                 ToolDetails.RHOMBUS
         ));
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("button"),
-                toolManager.getPictureManager().getPicture("t4"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Triangle"),
                 toolManager,
                 ToolDetails.TRIANGLE
         ));
         //combine
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("button"),
-                toolManager.getPictureManager().getPicture("t5"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Union"),
+                toolManager,
+                ToolDetails.UNION
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Intersection"),
+                toolManager,
+                ToolDetails.INTERSECT
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Difference"),
+                toolManager,
+                ToolDetails.DIFERENCE
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Xor"),
                 toolManager,
                 ToolDetails.XOR
         ));
         // tools
         addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("button"),
-                toolManager.getPictureManager().getPicture("example1"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Move"),
                 toolManager,
                 ToolDetails.MOVE
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Save_local"),
+                toolManager,
+                ToolDetails.SAVE
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Load_local"),
+                toolManager,
+                ToolDetails.LOAD
         ));
     }
 
@@ -111,6 +141,6 @@ public class SidePanel extends JPanel {
         // Draw a picture for example
         Dimension d = getPreferredSize();
         int topBar = instance.getInsets().top;
-        toolManager.getPictureManager().getPicture("example1").drawPicture(g, 0, 0, d.width, d.height - topBar, 4);
+        toolManager.getPictureManager().getPicture("Left_panel").drawPicture(g, 0, 0, d.width, d.height - topBar, 4);
     }
 }

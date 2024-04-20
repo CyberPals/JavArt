@@ -29,7 +29,7 @@ public class OptionPanel extends JPanel {
         super.paint(g);
 
         g.setColor(Color.PINK);
-        toolManager.getPictureManager().getPicture("example2").drawPicture(g, 0, 0, getPreferredSize().width, getPreferredSize().height, 4);
+        toolManager.getPictureManager().getPicture("Down_panel").drawPicture(g, 0, 0, getPreferredSize().width, getPreferredSize().height, 4);
         toolManager.getToolPics().drawPicture(g, 0, 0, 50, 50);
     }
 }
