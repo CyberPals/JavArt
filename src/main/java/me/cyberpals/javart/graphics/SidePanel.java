@@ -29,7 +29,7 @@ public class SidePanel extends JPanel {
         this.scrollPaneLayout.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         //setup Layout
-        this.layout.columnWidths = new int[]{75, 75};
+        this.layout.columnWidths = new int[]{50, 50};
         this.layout.rowHeights = new int[]{};
         this.layout.columnWeights = new double[]{0.0, 0.0};
         this.layout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -100,6 +100,13 @@ public class SidePanel extends JPanel {
         ));
         addButtonTool(new ToolButton(
                 toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Remove"),
+                toolManager,
+                ToolDetails.REMOVE
+        ));
+
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
                 toolManager.getPictureManager().getPicture("Save_local"),
                 toolManager,
                 ToolDetails.SAVE
@@ -128,7 +135,7 @@ public class SidePanel extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(150, instance.getHeight() - 100);
+        return new Dimension(100, instance.getHeight() - 100);
     }
 
     @Override

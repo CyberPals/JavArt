@@ -184,6 +184,10 @@ public class ToolManager {
             case CLICK:
 
                 switch (toolDetails) {
+                    case REMOVE:
+                        removeSelectedShape(getShape(new Vector2Int(e.getX(), e.getY())));
+                        canvas.repaint();
+                        break;
                     case SAVE:
                         Shape s = getShape(new Vector2Int(e.getX(), e.getY()));
                         try {
@@ -199,6 +203,7 @@ public class ToolManager {
                             //reloacate to current position
                             current.move(new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY()));
                             shapes.add(current);
+                            current.showDetails();
                             canvas.repaint();
                             JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
                         } catch (IOException ex) {
@@ -237,6 +242,8 @@ public class ToolManager {
                 return pictureManager.getPicture("Save_local");
             case LOAD:
                 return pictureManager.getPicture("Load_local");
+            case REMOVE:
+                return pictureManager.getPicture("Remove");
         }
         return null;
     }
@@ -250,7 +257,7 @@ public class ToolManager {
     }
 
     public void removeSelectedShape(Shape s) {
-
+        if (s != null) shapes.remove(s);
     }
 
     public void fuseSelectedShape() {

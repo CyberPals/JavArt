@@ -158,11 +158,13 @@ public class MainFrame extends JFrame {
         this.pictureManager.addPicture("Load_local", 2, 1);
         this.pictureManager.addPicture("Save_server", 3, 1);
         this.pictureManager.addPicture("Load_server", 4, 1);
+        this.pictureManager.addPicture("Remove", 1, 2);
 
         //UI
         this.pictureManager.addExtendablePicture("Button", 5, 1, 4, 4, 4, 4);
         this.pictureManager.addExtendablePicture("Left_panel", 6, 1, 2, 2, 2, 2);
         this.pictureManager.addExtendablePicture("Down_panel", 7, 1, 2, 2, 2, 2);
 
+        this.pictureManager.addPicture("Blank", 7, 7);
     }
 }
