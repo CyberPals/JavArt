@@ -15,7 +15,6 @@ public class SidePanel extends JPanel {
 
     // for layout purposes
     GridBagLayout layout;
-    ScrollPaneLayout scrollPaneLayout;
     private int x = 0, y = 0;
 
     public SidePanel(MainFrame instance, ToolManager toolManager) {
@@ -24,9 +23,6 @@ public class SidePanel extends JPanel {
         this.instance = instance;
         this.toolManager = toolManager;
         this.layout = new GridBagLayout();
-        this.scrollPaneLayout = new ScrollPaneLayout();
-        this.scrollPaneLayout.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        this.scrollPaneLayout.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         //setup Layout
         this.layout.columnWidths = new int[]{50, 50};
@@ -104,19 +100,6 @@ public class SidePanel extends JPanel {
                 toolManager,
                 ToolDetails.REMOVE
         ));
-
-        addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("Button"),
-                toolManager.getPictureManager().getPicture("Save_local"),
-                toolManager,
-                ToolDetails.SAVE
-        ));
-        addButtonTool(new ToolButton(
-                toolManager.getPictureManager().getPicture("Button"),
-                toolManager.getPictureManager().getPicture("Load_local"),
-                toolManager,
-                ToolDetails.LOAD
-        ));
     }
 
     private void addButtonTool(ToolButton b) {
@@ -135,7 +118,7 @@ public class SidePanel extends JPanel {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(100, instance.getHeight() - 100);
+        return new Dimension(100, instance.getHeight() - 50);
     }
 
     @Override

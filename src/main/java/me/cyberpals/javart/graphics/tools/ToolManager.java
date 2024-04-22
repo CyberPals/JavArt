@@ -16,6 +16,7 @@ import me.cyberpals.javart.shapes.simple.Triangle;
 import me.cyberpals.javart.vectors.Vector2Int;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -40,6 +41,8 @@ public class ToolManager {
     Shape s1, s2;
     int fuseIndex = 0;
 
+    String path;
+
     //attributes for save purpose
 
     SaveManager saveManager;
@@ -61,6 +64,7 @@ public class ToolManager {
         s1 = null;
         s2 = null;
         fuseIndex = 0;
+        path = null;
     }
 
     public void setTool(ToolDetails toolDetails) {
@@ -86,10 +90,34 @@ public class ToolManager {
             case XOR:
                 toolType = ToolType.COMBINE;
                 break;
+            case LOAD:
+                toolType = ToolType.CLICK;
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Load shape");
+
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Shape files", "toast");
+                fileChooser.setFileFilter(filter);
+
+                int select = fileChooser.showOpenDialog(null);
+                if (select == JFileChooser.APPROVE_OPTION) {
+                    path = fileChooser.getSelectedFile().getAbsolutePath();
+                    //open file
+                    try {
+                        Shape s = saveManager.loadShape(path);
+                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (ClassNotFoundException ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    setTool(ToolDetails.MOVE);
+                }
+
+                break;
+            case SAVE:
             case SELECT:
             case REMOVE:
-            case SAVE:
-            case LOAD:
             case RMI_SAVE:
             case RMI_LOAD:
                 toolType = ToolType.CLICK;
@@ -190,25 +218,33 @@ public class ToolManager {
                         break;
                     case SAVE:
                         Shape s = getShape(new Vector2Int(e.getX(), e.getY()));
-                        try {
-                            saveManager.saveShape(s, "file");
-                            JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE);
+                        if (s == null) return;
+                        //create file selection dialog
+                        JFileChooser fileChooser = new JFileChooser();
+                        int select = fileChooser.showSaveDialog(null);
+
+                        if (select == JFileChooser.APPROVE_OPTION) {
+                            path = fileChooser.getSelectedFile().getAbsolutePath();
+                            if (!path.endsWith(".toast")) {
+                                path += ".toast";
+
+                                try {
+                                    saveManager.saveShape(s, path);
+                                    JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                } catch (Exception ex) {
+                                    JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
                         }
                         break;
                     case LOAD:
+                        //append current variable shape to the list
                         try {
-                            Shape current = saveManager.loadShape("file");
-                            //reloacate to current position
-                            current.move(new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY()));
-                            shapes.add(current);
-                            current.showDetails();
+                            Shape s1 = saveManager.loadShape(path);
+                            s1.move(new Vector2Int(e.getX() - s1.getBegin().getX(), e.getY() - s1.getBegin().getY()));
+                            shapes.add(s1);
                             canvas.repaint();
-                            JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        } catch (IOException ex) {
-                            JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
-                        } catch (ClassNotFoundException ex) {
+                        } catch (Exception ex) {
                             JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                         break;
