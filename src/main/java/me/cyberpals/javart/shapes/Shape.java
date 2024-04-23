@@ -57,6 +57,7 @@ public abstract class Shape implements Serializable {
     }
 
     public void drawShape() {
+        //create 2 temp variables with correct order
         for (int y = begin.getY(); y <= end.getY(); y++) {
             for (int x = begin.getX(); x <= end.getX(); x++) {
                 if (test(new Vector2Int(x, y))) {

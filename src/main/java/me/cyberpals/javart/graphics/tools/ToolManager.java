@@ -39,6 +39,9 @@ public class ToolManager {
 
     Shape current;
     Shape s1, s2;
+
+    Vector2Int customBegin, customEnd;
+
     int fuseIndex = 0;
 
     String path;
@@ -138,10 +141,11 @@ public class ToolManager {
                 }
                 break;
             case SHAPE:
-                //create new shape
+                customBegin = new Vector2Int(e.getX(), e.getY());
+                customEnd = new Vector2Int(e.getX(), e.getY());
                 switch (toolDetails) {
                     case OVAL:
-                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX() + 1, e.getY() + 1));
+                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
                         break;
                     case RECTANGLE:
                         current = new Rectangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
@@ -183,7 +187,15 @@ public class ToolManager {
                 }
                 break;
             case SHAPE:
-                current.setEnd(new Vector2Int(e.getX(), e.getY()));
+                customEnd = new Vector2Int(e.getX(), e.getY());
+                current.setBegin(new Vector2Int(
+                        Math.min(customBegin.getX(), customEnd.getX()),
+                        Math.min(customBegin.getY(), customEnd.getY())
+                ));
+                current.setEnd(new Vector2Int(
+                        Math.max(customBegin.getX(), customEnd.getX()),
+                        Math.max(customBegin.getY(), customEnd.getY())
+                ));
                 canvas.repaint();
                 break;
         }
@@ -364,8 +376,17 @@ public class ToolManager {
             }
         }
         if (current != null) {
-            for (int i = current.getBegin().getX(); i < current.getEnd().getX(); i++) {
-                for (int j = current.getBegin().getY(); j < current.getEnd().getY(); j++) {
+            //recalculate manually the coordinates
+            Vector2Int begin = new Vector2Int(
+                    Math.min(current.getBegin().getX(), current.getEnd().getX()),
+                    Math.min(current.getBegin().getY(), current.getEnd().getY())
+            );
+            Vector2Int end = new Vector2Int(
+                    Math.max(current.getBegin().getX(), current.getEnd().getX()),
+                    Math.max(current.getBegin().getY(), current.getEnd().getY())
+            );
+            for (int i = begin.getX(); i < end.getX(); i++) {
+                for (int j = begin.getY(); j < end.getY(); j++) {
                     if (current.test(new Vector2Int(i, j))) {
                         g.fillRect(i, j, 1, 1);
                     }
