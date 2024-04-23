@@ -37,7 +37,7 @@ public class ToolButton extends JButton {
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(75, 75);
+        return new Dimension(50, 50);
     }
 
     @Override
@@ -46,9 +46,9 @@ public class ToolButton extends JButton {
         //super.paintComponent(g2d);
 
         //draw blue background
-        int offset = 7;
-        int fgOffset = 8;
-        bg.drawPicture(g2d, offset, offset, getWidth() - 2 * offset, getHeight() - 2 * offset, 4);
-        fg.drawPicture(g2d, fgOffset + offset, fgOffset + offset, getWidth() - 2 * (offset + fgOffset), getHeight() - 2 * (offset + fgOffset), 4);
+        int offset = 2;
+        int fgOffset = 5;
+        bg.drawPicture(g2d, offset, offset, getWidth() - 2 * offset, getHeight() - 2 * offset, 2);
+        fg.drawPicture(g2d, fgOffset + offset, fgOffset + offset, getWidth() - 2 * (offset + fgOffset), getHeight() - 2 * (offset + fgOffset), 2);
     }
 }

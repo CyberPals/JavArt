@@ -2,6 +2,8 @@ package me.cyberpals.javart.graphics.tools;
 
 import me.cyberpals.javart.graphics.pictures.PictureManager;
 import me.cyberpals.javart.graphics.pictures.types.Picture;
+import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
+import me.cyberpals.javart.serialisation.SaveManager;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.shapes.operations.Difference;
 import me.cyberpals.javart.shapes.operations.Intersection;
@@ -14,8 +16,10 @@ import me.cyberpals.javart.shapes.simple.Triangle;
 import me.cyberpals.javart.vectors.Vector2Int;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ToolManager {
@@ -35,13 +39,26 @@ public class ToolManager {
 
     Shape current;
     Shape s1, s2;
+
+    Vector2Int customBegin, customEnd;
+
     int fuseIndex = 0;
 
+    String path;
+
+    //attributes for save purpose
+
+    SaveManager saveManager;
+    ClientServerRmiShape clientRmiShape;
 
     public ToolManager(PictureManager pictureManager) {
         this.pictureManager = pictureManager;
         shapes = new ArrayList<>();
         setTool(ToolDetails.OVAL);
+
+        //setup managers
+        saveManager = new SaveManager();
+        clientRmiShape = new ClientServerRmiShape();
     }
 
 
@@ -50,6 +67,7 @@ public class ToolManager {
         s1 = null;
         s2 = null;
         fuseIndex = 0;
+        path = null;
     }
 
     public void setTool(ToolDetails toolDetails) {
@@ -75,10 +93,34 @@ public class ToolManager {
             case XOR:
                 toolType = ToolType.COMBINE;
                 break;
+            case LOAD:
+                toolType = ToolType.CLICK;
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Load shape");
+
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Shape files", "toast");
+                fileChooser.setFileFilter(filter);
+
+                int select = fileChooser.showOpenDialog(null);
+                if (select == JFileChooser.APPROVE_OPTION) {
+                    path = fileChooser.getSelectedFile().getAbsolutePath();
+                    //open file
+                    try {
+                        Shape s = saveManager.loadShape(path);
+                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (ClassNotFoundException ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    setTool(ToolDetails.MOVE);
+                }
+
+                break;
+            case SAVE:
             case SELECT:
             case REMOVE:
-            case SAVE:
-            case LOAD:
             case RMI_SAVE:
             case RMI_LOAD:
                 toolType = ToolType.CLICK;
@@ -99,10 +141,11 @@ public class ToolManager {
                 }
                 break;
             case SHAPE:
-                //create new shape
+                customBegin = new Vector2Int(e.getX(), e.getY());
+                customEnd = new Vector2Int(e.getX(), e.getY());
                 switch (toolDetails) {
                     case OVAL:
-                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX() + 1, e.getY() + 1));
+                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
                         break;
                     case RECTANGLE:
                         current = new Rectangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
@@ -144,7 +187,15 @@ public class ToolManager {
                 }
                 break;
             case SHAPE:
-                current.setEnd(new Vector2Int(e.getX(), e.getY()));
+                customEnd = new Vector2Int(e.getX(), e.getY());
+                current.setBegin(new Vector2Int(
+                        Math.min(customBegin.getX(), customEnd.getX()),
+                        Math.min(customBegin.getY(), customEnd.getY())
+                ));
+                current.setEnd(new Vector2Int(
+                        Math.max(customBegin.getX(), customEnd.getX()),
+                        Math.max(customBegin.getY(), customEnd.getY())
+                ));
                 canvas.repaint();
                 break;
         }
@@ -171,6 +222,45 @@ public class ToolManager {
                 }
                 break;
             case CLICK:
+
+                switch (toolDetails) {
+                    case REMOVE:
+                        removeSelectedShape(getShape(new Vector2Int(e.getX(), e.getY())));
+                        canvas.repaint();
+                        break;
+                    case SAVE:
+                        Shape s = getShape(new Vector2Int(e.getX(), e.getY()));
+                        if (s == null) return;
+                        //create file selection dialog
+                        JFileChooser fileChooser = new JFileChooser();
+                        int select = fileChooser.showSaveDialog(null);
+
+                        if (select == JFileChooser.APPROVE_OPTION) {
+                            path = fileChooser.getSelectedFile().getAbsolutePath();
+                            if (!path.endsWith(".toast")) {
+                                path += ".toast";
+
+                                try {
+                                    saveManager.saveShape(s, path);
+                                    JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                } catch (Exception ex) {
+                                    JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                        }
+                        break;
+                    case LOAD:
+                        //append current variable shape to the list
+                        try {
+                            Shape s1 = saveManager.loadShape(path);
+                            s1.move(new Vector2Int(e.getX() - s1.getBegin().getX(), e.getY() - s1.getBegin().getY()));
+                            shapes.add(s1);
+                            canvas.repaint();
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        break;
+                }
                 break;
         }
     }
@@ -179,23 +269,29 @@ public class ToolManager {
     public Picture getToolPics() {
         switch (toolDetails) {
             case OVAL:
-                return pictureManager.getPicture("t1");
+                return pictureManager.getPicture("Oval");
             case RECTANGLE:
-                return pictureManager.getPicture("t2");
+                return pictureManager.getPicture("Rectangle");
             case RHOMBUS:
-                return pictureManager.getPicture("t3");
+                return pictureManager.getPicture("Rhombus");
             case TRIANGLE:
-                return pictureManager.getPicture("t4");
+                return pictureManager.getPicture("Triangle");
             case DIFERENCE:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Difference");
             case INTERSECT:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Intersection");
             case UNION:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Union");
             case XOR:
-                return pictureManager.getPicture("t5");
+                return pictureManager.getPicture("Xor");
             case MOVE:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Move");
+            case SAVE:
+                return pictureManager.getPicture("Save_local");
+            case LOAD:
+                return pictureManager.getPicture("Load_local");
+            case REMOVE:
+                return pictureManager.getPicture("Remove");
         }
         return null;
     }
@@ -209,7 +305,7 @@ public class ToolManager {
     }
 
     public void removeSelectedShape(Shape s) {
-
+        if (s != null) shapes.remove(s);
     }
 
     public void fuseSelectedShape() {
@@ -264,6 +360,7 @@ public class ToolManager {
     }
 
     public void paintData(Graphics g) {
+        g.setColor(Color.decode("#050505"));
         for (Shape shape : shapes) {
             for (int i = shape.getBegin().getX(); i < shape.getEnd().getX(); i++) {
                 for (int j = shape.getBegin().getY(); j < shape.getEnd().getY(); j++) {
@@ -279,8 +376,17 @@ public class ToolManager {
             }
         }
         if (current != null) {
-            for (int i = current.getBegin().getX(); i < current.getEnd().getX(); i++) {
-                for (int j = current.getBegin().getY(); j < current.getEnd().getY(); j++) {
+            //recalculate manually the coordinates
+            Vector2Int begin = new Vector2Int(
+                    Math.min(current.getBegin().getX(), current.getEnd().getX()),
+                    Math.min(current.getBegin().getY(), current.getEnd().getY())
+            );
+            Vector2Int end = new Vector2Int(
+                    Math.max(current.getBegin().getX(), current.getEnd().getX()),
+                    Math.max(current.getBegin().getY(), current.getEnd().getY())
+            );
+            for (int i = begin.getX(); i < end.getX(); i++) {
+                for (int j = begin.getY(); j < end.getY(); j++) {
                     if (current.test(new Vector2Int(i, j))) {
                         g.fillRect(i, j, 1, 1);
                     }
