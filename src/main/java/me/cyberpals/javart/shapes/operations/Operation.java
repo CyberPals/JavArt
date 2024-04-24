@@ -59,6 +59,14 @@ public abstract class Operation extends Shape {
         setEnd(getEnd().add(dPos));
     }
 
+    public Shape getChild1() {
+        return child1;
+    }
+
+    public Shape getChild2() {
+        return child2;
+    }
+
     @Override
     public void move(Vector2Int dPos) {
         super.move(dPos);

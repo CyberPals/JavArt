@@ -20,4 +20,9 @@ public class Union extends Operation {
         child1.showDetails(offset + 1);
         child2.showDetails(offset + 1);
     }
+
+    @Override
+    public Shape copy() {
+        return new Union(child1.copy(), child2.copy());
+    }
 }

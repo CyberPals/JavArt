@@ -1,5 +1,6 @@
 package me.cyberpals.javart.shapes.simple;
 
+import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.vectors.Vector2Float;
 import me.cyberpals.javart.vectors.Vector2Int;
 
@@ -32,5 +33,10 @@ public class Oval extends SimpleShape {
     @Override
     public void showDetails(int offset) {
         System.out.println("  ".repeat(offset) + " + Oval:(" + getBegin() + "," + getEnd() + ")");
+    }
+
+    @Override
+    public Shape copy() {
+        return new Oval(getBegin(), getEnd());
     }
 }

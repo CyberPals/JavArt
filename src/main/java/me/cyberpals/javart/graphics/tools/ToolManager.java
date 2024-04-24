@@ -5,10 +5,7 @@ import me.cyberpals.javart.graphics.pictures.types.Picture;
 import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
 import me.cyberpals.javart.serialisation.SaveManager;
 import me.cyberpals.javart.shapes.Shape;
-import me.cyberpals.javart.shapes.operations.Difference;
-import me.cyberpals.javart.shapes.operations.Intersection;
-import me.cyberpals.javart.shapes.operations.Union;
-import me.cyberpals.javart.shapes.operations.Xor;
+import me.cyberpals.javart.shapes.operations.*;
 import me.cyberpals.javart.shapes.simple.Oval;
 import me.cyberpals.javart.shapes.simple.Rectangle;
 import me.cyberpals.javart.shapes.simple.Rhombus;
@@ -68,6 +65,8 @@ public class ToolManager {
         s2 = null;
         fuseIndex = 0;
         path = null;
+
+        if (canvas != null) canvas.repaint();
     }
 
     public void setTool(ToolDetails toolDetails) {
@@ -118,6 +117,8 @@ public class ToolManager {
                 }
 
                 break;
+            case COPY:
+            case UNGROUP:
             case SAVE:
             case SELECT:
             case REMOVE:
@@ -260,6 +261,32 @@ public class ToolManager {
                             JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                         break;
+                    case COPY:
+                        if (s1 == null) {
+                            Shape sel = getShape(new Vector2Int(e.getX(), e.getY()));
+                            if (sel != null) {
+                                s1 = sel;
+                                canvas.repaint();
+                            }
+                        } else {
+                            Shape temp = s1.copy();
+                            temp.move(new Vector2Int(e.getX() - temp.getBegin().getX(), e.getY() - temp.getBegin().getY()));
+                            shapes.add(temp);
+                            canvas.repaint();
+                        }
+                        break;
+                    case UNGROUP:
+                        Shape sel = getShape(new Vector2Int(e.getX(), e.getY()));
+                        //test if sel extends from Operation
+                        if (sel instanceof Operation) {
+                            Operation op = (Operation) sel;
+                            Shape c1 = op.getChild1();
+                            Shape c2 = op.getChild2();
+                            shapes.add(c1);
+                            shapes.add(c2);
+                            shapes.remove(sel);
+                            canvas.repaint();
+                        }
                 }
                 break;
         }
@@ -286,6 +313,10 @@ public class ToolManager {
                 return pictureManager.getPicture("Xor");
             case MOVE:
                 return pictureManager.getPicture("Move");
+            case COPY:
+                return pictureManager.getPicture("Copy");
+            case UNGROUP:
+                return pictureManager.getPicture("Ungroup");
             case SAVE:
                 return pictureManager.getPicture("Save_local");
             case LOAD:
@@ -294,10 +325,6 @@ public class ToolManager {
                 return pictureManager.getPicture("Remove");
         }
         return null;
-    }
-
-    public void updateCurrentAddingShape() {
-
     }
 
     public void addNewShapeFromCurrent() {

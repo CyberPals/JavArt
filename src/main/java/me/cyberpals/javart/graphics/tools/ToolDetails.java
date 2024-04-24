@@ -20,6 +20,8 @@ public enum ToolDetails {
     // one click
     SELECT,
     REMOVE,
+    COPY,
+    UNGROUP,
     SAVE,
     LOAD,
     RMI_SAVE,

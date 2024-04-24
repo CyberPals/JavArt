@@ -69,4 +69,6 @@ public abstract class Shape implements Serializable {
             System.out.println();
         }
     }
+
+    public abstract Shape copy();
 }
