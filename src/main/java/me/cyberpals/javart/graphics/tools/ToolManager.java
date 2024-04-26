@@ -5,10 +5,7 @@ import me.cyberpals.javart.graphics.pictures.types.Picture;
 import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
 import me.cyberpals.javart.serialisation.SaveManager;
 import me.cyberpals.javart.shapes.Shape;
-import me.cyberpals.javart.shapes.operations.Difference;
-import me.cyberpals.javart.shapes.operations.Intersection;
-import me.cyberpals.javart.shapes.operations.Union;
-import me.cyberpals.javart.shapes.operations.Xor;
+import me.cyberpals.javart.shapes.operations.*;
 import me.cyberpals.javart.shapes.simple.Oval;
 import me.cyberpals.javart.shapes.simple.Rectangle;
 import me.cyberpals.javart.shapes.simple.Rhombus;
@@ -68,6 +65,8 @@ public class ToolManager {
         s2 = null;
         fuseIndex = 0;
         path = null;
+
+        if (canvas != null) canvas.repaint();
     }
 
     public void setTool(ToolDetails toolDetails) {
@@ -79,6 +78,7 @@ public class ToolManager {
         switch (toolDetails) {
             case MOVE:
             case MOVE_OBJECT:
+            case RESIZE:
                 toolType = ToolType.MOVE;
                 break;
             case OVAL:
@@ -118,6 +118,8 @@ public class ToolManager {
                 }
 
                 break;
+            case COPY:
+            case UNGROUP:
             case SAVE:
             case SELECT:
             case REMOVE:
@@ -135,9 +137,20 @@ public class ToolManager {
     public void mousePressed(MouseEvent e) {
         switch (toolType) {
             case MOVE:
-                current = getShape(new Vector2Int(e.getX(), e.getY()));
-                if (current != null) {
-                    deltaPos = new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY());
+                switch (toolDetails) {
+                    case MOVE:
+                        current = getShape(new Vector2Int(e.getX(), e.getY()));
+                        if (current != null) {
+                            deltaPos = new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY());
+                        }
+                        break;
+                    case RESIZE:
+                        s1 = getShape(new Vector2Int(e.getX(), e.getY()));
+                        if (s1 != null) {
+                            current = s1.copy();
+                            shapes.remove(s1);
+                        }
+                        break;
                 }
                 break;
             case SHAPE:
@@ -165,9 +178,24 @@ public class ToolManager {
     public void mouseReleased(MouseEvent e) {
         switch (toolType) {
             case MOVE:
-                if (current != null) {
-                    current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
-                    canvas.repaint();
+                switch (toolDetails) {
+                    case MOVE:
+                        if (current != null) {
+                            current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
+                            current = null;
+                            deltaPos = null;
+                            canvas.repaint();
+                        }
+                        break;
+                    case RESIZE:
+                        if (s1 != null) {
+                            s1.resize(new Vector2Int(e.getX() - s1.getEnd().getX(), e.getY() - s1.getEnd().getY()));
+                            shapes.add(s1);
+                            s1 = null;
+                            current = null;
+                            canvas.repaint();
+                        }
+                        break;
                 }
                 break;
             case SHAPE:
@@ -181,9 +209,20 @@ public class ToolManager {
     public void mouseDragged(MouseEvent e) {
         switch (toolType) {
             case MOVE:
-                if (current != null) {
-                    current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
-                    canvas.repaint();
+                switch (toolDetails) {
+                    case MOVE:
+                        if (current != null) {
+                            current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
+                            canvas.repaint();
+                        }
+                        break;
+                    case RESIZE:
+                        if (s1 != null) {
+                            current = s1.copy();
+                            current.resize(new Vector2Int(e.getX() - s1.getEnd().getX(), e.getY() - s1.getEnd().getY()));
+                            canvas.repaint();
+                        }
+                        break;
                 }
                 break;
             case SHAPE:
@@ -260,6 +299,32 @@ public class ToolManager {
                             JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
                         }
                         break;
+                    case COPY:
+                        if (s1 == null) {
+                            Shape sel = getShape(new Vector2Int(e.getX(), e.getY()));
+                            if (sel != null) {
+                                s1 = sel;
+                                canvas.repaint();
+                            }
+                        } else {
+                            Shape temp = s1.copy();
+                            temp.move(new Vector2Int(e.getX() - temp.getBegin().getX(), e.getY() - temp.getBegin().getY()));
+                            shapes.add(temp);
+                            canvas.repaint();
+                        }
+                        break;
+                    case UNGROUP:
+                        Shape sel = getShape(new Vector2Int(e.getX(), e.getY()));
+                        //test if sel extends from Operation
+                        if (sel instanceof Operation) {
+                            Operation op = (Operation) sel;
+                            Shape c1 = op.getChild1();
+                            Shape c2 = op.getChild2();
+                            shapes.add(c1);
+                            shapes.add(c2);
+                            shapes.remove(sel);
+                            canvas.repaint();
+                        }
                 }
                 break;
         }
@@ -286,6 +351,12 @@ public class ToolManager {
                 return pictureManager.getPicture("Xor");
             case MOVE:
                 return pictureManager.getPicture("Move");
+            case RESIZE:
+                return pictureManager.getPicture("Button");
+            case COPY:
+                return pictureManager.getPicture("Copy");
+            case UNGROUP:
+                return pictureManager.getPicture("Ungroup");
             case SAVE:
                 return pictureManager.getPicture("Save_local");
             case LOAD:
@@ -294,10 +365,6 @@ public class ToolManager {
                 return pictureManager.getPicture("Remove");
         }
         return null;
-    }
-
-    public void updateCurrentAddingShape() {
-
     }
 
     public void addNewShapeFromCurrent() {
@@ -359,19 +426,42 @@ public class ToolManager {
         return pictureManager;
     }
 
+    private void fillRect(Graphics g, int x, int y, int w, Shape current) {
+        if (current == s1) {
+            g.setColor(Color.decode("#B50505"));
+        } else {
+            g.setColor(Color.decode("#050505"));
+        }
+        g.fillRect(x, y, w, 1);
+    }
+
     public void paintData(Graphics g) {
         g.setColor(Color.decode("#050505"));
         for (Shape shape : shapes) {
-            for (int i = shape.getBegin().getX(); i < shape.getEnd().getX(); i++) {
-                for (int j = shape.getBegin().getY(); j < shape.getEnd().getY(); j++) {
+            boolean inProgress = false;
+            int len = 0;
+            int savedX = 0;
+            for (int j = shape.getBegin().getY(); j < shape.getEnd().getY(); j++) {
+                for (int i = shape.getBegin().getX(); i < shape.getEnd().getX(); i++) {
                     if (shape.test(new Vector2Int(i, j))) {
-                        if (shape == s1) {
-                            g.setColor(Color.decode("#B50505"));
+                        if (!inProgress) {
+                            inProgress = true;
+                            len = 1;
+                            savedX = i;
                         } else {
-                            g.setColor(Color.decode("#050505"));
+                            len++;
                         }
-                        g.fillRect(i, j, 1, 1);
+                    } else {
+                        //fill rectangle
+                        if (inProgress) {
+                            fillRect(g, savedX, j, len, shape);
+                            inProgress = false;
+                        }
                     }
+                }
+                if (inProgress) {
+                    fillRect(g, savedX, j, len, shape);
+                    inProgress = false;
                 }
             }
         }
@@ -385,11 +475,30 @@ public class ToolManager {
                     Math.max(current.getBegin().getX(), current.getEnd().getX()),
                     Math.max(current.getBegin().getY(), current.getEnd().getY())
             );
-            for (int i = begin.getX(); i < end.getX(); i++) {
-                for (int j = begin.getY(); j < end.getY(); j++) {
+            boolean inProgress = false;
+            int len = 0;
+            int savedX = 0;
+            for (int j = begin.getY(); j < end.getY(); j++) {
+                for (int i = begin.getX(); i < end.getX(); i++) {
                     if (current.test(new Vector2Int(i, j))) {
-                        g.fillRect(i, j, 1, 1);
+                        if (!inProgress) {
+                            inProgress = true;
+                            len = 1;
+                            savedX = i;
+                        } else {
+                            len++;
+                        }
+                    } else {
+                        //fill rectangle
+                        if (inProgress) {
+                            fillRect(g, savedX, j, len, current);
+                            inProgress = false;
+                        }
                     }
+                }
+                if (inProgress) {
+                    fillRect(g, savedX, j, len, current);
+                    inProgress = false;
                 }
             }
         }

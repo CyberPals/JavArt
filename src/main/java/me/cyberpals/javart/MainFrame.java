@@ -139,7 +139,7 @@ public class MainFrame extends JFrame {
     }
 
     private void setupTextures() {
-        //tools
+        //shape
         this.pictureManager.addPicture("Rectangle", 0, 0);
         this.pictureManager.addPicture("Oval", 1, 0);
         this.pictureManager.addPicture("Triangle", 2, 0);
@@ -150,15 +150,20 @@ public class MainFrame extends JFrame {
         this.pictureManager.addPicture("Intersection", 5, 0);
         this.pictureManager.addPicture("Difference", 6, 0);
         this.pictureManager.addPicture("Xor", 7, 0);
+
+        //tools
         this.pictureManager.addPicture("Move", 0, 1);
         this.pictureManager.addPicture("Select", 0, 2);
+        this.pictureManager.addPicture("Copy", 2, 2);
+        this.pictureManager.addPicture("Ungroup", 3, 2);
+        this.pictureManager.addPicture("Remove", 1, 2);
 
         //save
         this.pictureManager.addPicture("Save_local", 1, 1);
         this.pictureManager.addPicture("Load_local", 2, 1);
         this.pictureManager.addPicture("Save_server", 3, 1);
         this.pictureManager.addPicture("Load_server", 4, 1);
-        this.pictureManager.addPicture("Remove", 1, 2);
+
 
         //UI
         this.pictureManager.addExtendablePicture("Button", 5, 1, 4, 4, 4, 4);

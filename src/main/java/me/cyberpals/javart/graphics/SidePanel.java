@@ -96,6 +96,24 @@ public class SidePanel extends JPanel {
         ));
         addButtonTool(new ToolButton(
                 toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager,
+                ToolDetails.RESIZE
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Copy"),
+                toolManager,
+                ToolDetails.COPY
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Ungroup"),
+                toolManager,
+                ToolDetails.UNGROUP
+        ));
+        addButtonTool(new ToolButton(
+                toolManager.getPictureManager().getPicture("Button"),
                 toolManager.getPictureManager().getPicture("Remove"),
                 toolManager,
                 ToolDetails.REMOVE
