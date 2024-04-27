@@ -113,7 +113,16 @@ public class ClickManager {
                     case RESIZE:
                         if (toolManager.s1 != null) {
                             toolManager.current = toolManager.s1.copy();
-                            toolManager.current.resize(new Vector2Int(e.getX() - toolManager.s1.getEnd().getX() + toolManager.cameraOffset.getX(), e.getY() - toolManager.s1.getEnd().getY() + toolManager.cameraOffset.getY()));
+                            toolManager.current.resize(
+                                    new Vector2Int(
+                                            Math.max(
+                                                    e.getX() - toolManager.s1.getEnd().getX() + toolManager.cameraOffset.getX(),
+                                                    -toolManager.current.getEnd().getX() + toolManager.current.getBegin().getX()
+                                            ),
+                                            Math.max(
+                                                    e.getY() - toolManager.s1.getEnd().getY() + toolManager.cameraOffset.getY(),
+                                                    -toolManager.current.getEnd().getY() + toolManager.current.getBegin().getY()
+                                            )));
                             toolManager.canvas.repaint();
                         }
                         break;
@@ -169,12 +178,12 @@ public class ClickManager {
                         int select = fileChooser.showSaveDialog(null);
 
                         if (select == JFileChooser.APPROVE_OPTION) {
-                            toolManager.path = fileChooser.getSelectedFile().getAbsolutePath();
-                            if (!toolManager.path.endsWith(".toast")) {
-                                toolManager.path += ".toast";
+                            String path = fileChooser.getSelectedFile().getAbsolutePath();
+                            if (!path.endsWith(".toast")) {
+                                path += ".toast";
 
                                 try {
-                                    toolManager.saveManager.saveShape(s, toolManager.path);
+                                    toolManager.saveManager.saveShape(s, path);
                                     JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_info"), 64, 64));
                                 } catch (Exception ex) {
                                     JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_error"), 64, 64));
@@ -184,14 +193,12 @@ public class ClickManager {
                         break;
                     case LOAD:
                         //append current variable shape to the list
-                        try {
-                            Shape s1 = toolManager.saveManager.loadShape(toolManager.path);
-                            s1.move(new Vector2Int(e.getX() - s1.getBegin().getX(), e.getY() - s1.getBegin().getY()));
-                            toolManager.shapes.add(s1);
-                            toolManager.canvas.repaint();
-                        } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_error"), 64, 64));
-                        }
+
+                        Shape s1 = toolManager.s1.copy();
+                        s1.move(new Vector2Int(e.getX() - s1.getBegin().getX(), e.getY() - s1.getBegin().getY()));
+                        toolManager.shapes.add(s1);
+                        toolManager.canvas.repaint();
+
                         break;
                     case COPY:
                         if (toolManager.s1 == null) {

@@ -41,8 +41,6 @@ public class ToolManager {
 
     int fuseIndex = 0;
 
-    String path;
-
     //attributes for save purpose
 
     SaveManager saveManager;
@@ -73,7 +71,6 @@ public class ToolManager {
         s1 = null;
         s2 = null;
         fuseIndex = 0;
-        path = null;
 
         if (canvas != null) canvas.repaint();
     }
@@ -116,11 +113,12 @@ public class ToolManager {
 
                 int select = fileChooser.showOpenDialog(null);
                 if (select == JFileChooser.APPROVE_OPTION) {
-                    path = fileChooser.getSelectedFile().getAbsolutePath();
+                    String path = fileChooser.getSelectedFile().getAbsolutePath();
                     //open file
                     try {
                         Shape s = saveManager.loadShape(path);
                         JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
+                        s1 = s;
                     } catch (IOException ex) {
                         JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
                     } catch (ClassNotFoundException ex) {
