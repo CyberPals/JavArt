@@ -7,6 +7,8 @@ import me.cyberpals.javart.graphics.tools.ToolManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class OptionPanel extends JPanel {
     MainFrame instance;
@@ -34,6 +36,25 @@ public class OptionPanel extends JPanel {
         setupButtons();
 
         toolManager.setOptionPanel(this);
+
+        this.setFocusable(true);
+        this.requestFocus();
+
+        //key manager
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                //System.out.println("Key pressed");
+                super.keyPressed(e);
+                toolManager.keyPressed(e);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                toolManager.keyReleased(e);
+            }
+        });
     }
 
     private void setupButtons() {

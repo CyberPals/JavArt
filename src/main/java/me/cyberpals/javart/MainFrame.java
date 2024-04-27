@@ -63,6 +63,8 @@ public class MainFrame extends JFrame {
 
         this.setLocationRelativeTo(null);
         this.pack();
+
+        toolManager.mainLoop();
     }
 
     public static void main(String[] args) {
@@ -169,6 +171,10 @@ public class MainFrame extends JFrame {
         this.pictureManager.addExtendablePicture("Button", 5, 1, 4, 4, 4, 4);
         this.pictureManager.addExtendablePicture("Left_panel", 6, 1, 2, 2, 2, 2);
         this.pictureManager.addExtendablePicture("Down_panel", 7, 1, 2, 2, 2, 2);
+
+        //icons
+        this.pictureManager.addPicture("Icon_error", 4, 2);
+        this.pictureManager.addPicture("Icon_info", 5, 2);
 
         this.pictureManager.addPicture("Blank", 7, 7);
     }

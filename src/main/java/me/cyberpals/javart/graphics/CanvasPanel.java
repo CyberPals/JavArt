@@ -53,6 +53,8 @@ public class CanvasPanel extends JPanel {
                 toolManager.mouseDragged(e);
             }
         });
+
+        this.setFocusable(false);
     }
 
     @Override
