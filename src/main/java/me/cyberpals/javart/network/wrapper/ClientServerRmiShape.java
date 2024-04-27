@@ -30,7 +30,7 @@ public class ClientServerRmiShape implements IClientServerRmi<Shape> {
         clientPort = port;
         clientIp = ip;
         try {
-            System.out.println(ip);
+            System.out.println("ip adress : " +  ip);
             clientRegistry = LocateRegistry.getRegistry(ip, port);
         } catch (Exception e) {
             e.printStackTrace();
