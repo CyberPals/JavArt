@@ -33,6 +33,8 @@ public class SidePanel extends JPanel {
         this.setLayout(this.layout);
         this.setVisible(true);
         setupButtons();
+
+        this.setFocusable(false);
     }
 
     private void setupButtons() {

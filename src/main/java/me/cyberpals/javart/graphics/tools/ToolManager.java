@@ -15,6 +15,7 @@ import me.cyberpals.javart.vectors.Vector2Int;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,6 +48,10 @@ public class ToolManager {
 
     SaveManager saveManager;
     ClientServerRmiShape clientRmiShape;
+    //methods for handling Camera
+    MovementKey cameraMovement = new MovementKey(KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT);
+    Vector2Int cameraOffset = new Vector2Int(0, 0);
+
 
     public ToolManager(PictureManager pictureManager) {
         this.pictureManager = pictureManager;
@@ -59,6 +64,8 @@ public class ToolManager {
     }
 
 
+    //methods for handling mouse events
+
     private void resetDatas() {
         current = null;
         s1 = null;
@@ -67,6 +74,10 @@ public class ToolManager {
         path = null;
 
         if (canvas != null) canvas.repaint();
+    }
+
+    private ImageIcon generateIcon(Picture picture, int width, int height) {
+        return new ImageIcon(picture.getPicture().getScaledInstance(width, height, Image.SCALE_DEFAULT));
     }
 
     public void setTool(ToolDetails toolDetails) {
@@ -107,11 +118,11 @@ public class ToolManager {
                     //open file
                     try {
                         Shape s = saveManager.loadShape(path);
-                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
                     } catch (ClassNotFoundException ex) {
-                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
                     }
                 } else {
                     setTool(ToolDetails.MOVE);
@@ -132,20 +143,18 @@ public class ToolManager {
             optionPanel.repaint();
     }
 
-    //methods for handling mouse events
-
     public void mousePressed(MouseEvent e) {
         switch (toolType) {
             case MOVE:
                 switch (toolDetails) {
                     case MOVE:
-                        current = getShape(new Vector2Int(e.getX(), e.getY()));
+                        current = getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         if (current != null) {
-                            deltaPos = new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY());
+                            deltaPos = new Vector2Int(e.getX() - current.getBegin().getX() + cameraOffset.getX(), e.getY() - current.getBegin().getY() + cameraOffset.getY());
                         }
                         break;
                     case RESIZE:
-                        s1 = getShape(new Vector2Int(e.getX(), e.getY()));
+                        s1 = getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         if (s1 != null) {
                             current = s1.copy();
                             shapes.remove(s1);
@@ -154,20 +163,20 @@ public class ToolManager {
                 }
                 break;
             case SHAPE:
-                customBegin = new Vector2Int(e.getX(), e.getY());
-                customEnd = new Vector2Int(e.getX(), e.getY());
+                customBegin = new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY());
+                customEnd = new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY());
                 switch (toolDetails) {
                     case OVAL:
-                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
+                        current = new Oval(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()), new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         break;
                     case RECTANGLE:
-                        current = new Rectangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
+                        current = new Rectangle(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()), new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         break;
                     case RHOMBUS:
-                        current = new Rhombus(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
+                        current = new Rhombus(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()), new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         break;
                     case TRIANGLE:
-                        current = new Triangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
+                        current = new Triangle(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()), new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         break;
                 }
                 canvas.repaint();
@@ -181,7 +190,7 @@ public class ToolManager {
                 switch (toolDetails) {
                     case MOVE:
                         if (current != null) {
-                            current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
+                            current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX() + cameraOffset.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY() + cameraOffset.getY()));
                             current = null;
                             deltaPos = null;
                             canvas.repaint();
@@ -189,7 +198,7 @@ public class ToolManager {
                         break;
                     case RESIZE:
                         if (s1 != null) {
-                            s1.resize(new Vector2Int(e.getX() - s1.getEnd().getX(), e.getY() - s1.getEnd().getY()));
+                            s1.resize(new Vector2Int(e.getX() - s1.getEnd().getX() + cameraOffset.getX(), e.getY() - s1.getEnd().getY() + cameraOffset.getY()));
                             shapes.add(s1);
                             s1 = null;
                             current = null;
@@ -212,21 +221,21 @@ public class ToolManager {
                 switch (toolDetails) {
                     case MOVE:
                         if (current != null) {
-                            current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
+                            current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX() + cameraOffset.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY() + cameraOffset.getY()));
                             canvas.repaint();
                         }
                         break;
                     case RESIZE:
                         if (s1 != null) {
                             current = s1.copy();
-                            current.resize(new Vector2Int(e.getX() - s1.getEnd().getX(), e.getY() - s1.getEnd().getY()));
+                            current.resize(new Vector2Int(e.getX() - s1.getEnd().getX() + cameraOffset.getX(), e.getY() - s1.getEnd().getY() + cameraOffset.getY()));
                             canvas.repaint();
                         }
                         break;
                 }
                 break;
             case SHAPE:
-                customEnd = new Vector2Int(e.getX(), e.getY());
+                customEnd = new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY());
                 current.setBegin(new Vector2Int(
                         Math.min(customBegin.getX(), customEnd.getX()),
                         Math.min(customBegin.getY(), customEnd.getY())
@@ -244,13 +253,13 @@ public class ToolManager {
         switch (toolType) {
             case COMBINE:
                 if (fuseIndex == 0) {
-                    s1 = getShape(new Vector2Int(e.getX(), e.getY()));
+                    s1 = getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                     if (s1 != null) {
                         fuseIndex = 1;
                         canvas.repaint();
                     }
                 } else {
-                    s2 = getShapeNot(new Vector2Int(e.getX(), e.getY()), s1);
+                    s2 = getShapeNot(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()), s1);
                     if (s2 != null) {
                         fuseSelectedShape();
                         fuseIndex = 0;
@@ -264,11 +273,11 @@ public class ToolManager {
 
                 switch (toolDetails) {
                     case REMOVE:
-                        removeSelectedShape(getShape(new Vector2Int(e.getX(), e.getY())));
+                        removeSelectedShape(getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY())));
                         canvas.repaint();
                         break;
                     case SAVE:
-                        Shape s = getShape(new Vector2Int(e.getX(), e.getY()));
+                        Shape s = getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         if (s == null) return;
                         //create file selection dialog
                         JFileChooser fileChooser = new JFileChooser();
@@ -281,9 +290,9 @@ public class ToolManager {
 
                                 try {
                                     saveManager.saveShape(s, path);
-                                    JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "Shape saved", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
                                 } catch (Exception ex) {
-                                    JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE);
+                                    JOptionPane.showMessageDialog(null, "Error while saving the shape", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
                                 }
                             }
                         }
@@ -296,25 +305,25 @@ public class ToolManager {
                             shapes.add(s1);
                             canvas.repaint();
                         } catch (Exception ex) {
-                            JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
                         }
                         break;
                     case COPY:
                         if (s1 == null) {
-                            Shape sel = getShape(new Vector2Int(e.getX(), e.getY()));
+                            Shape sel = getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                             if (sel != null) {
                                 s1 = sel;
                                 canvas.repaint();
                             }
                         } else {
                             Shape temp = s1.copy();
-                            temp.move(new Vector2Int(e.getX() - temp.getBegin().getX(), e.getY() - temp.getBegin().getY()));
+                            temp.move(new Vector2Int(e.getX() - temp.getBegin().getX() + cameraOffset.getX(), e.getY() - temp.getBegin().getY() + cameraOffset.getY()));
                             shapes.add(temp);
                             canvas.repaint();
                         }
                         break;
                     case UNGROUP:
-                        Shape sel = getShape(new Vector2Int(e.getX(), e.getY()));
+                        Shape sel = getShape(new Vector2Int(e.getX() + cameraOffset.getX(), e.getY() + cameraOffset.getY()));
                         //test if sel extends from Operation
                         if (sel instanceof Operation) {
                             Operation op = (Operation) sel;
@@ -327,6 +336,33 @@ public class ToolManager {
                         }
                 }
                 break;
+        }
+    }
+
+    //methods for handling key events
+    public void keyPressed(KeyEvent e) {
+        cameraMovement.keyPressed(e.getKeyCode());
+    }
+
+    public void keyReleased(KeyEvent e) {
+        cameraMovement.keyReleased(e.getKeyCode());
+    }
+
+    //main loop
+    public void mainLoop() {
+        while (true) {
+            Vector2Int camMvt = cameraMovement.getMovement();
+            cameraOffset = cameraOffset.add(camMvt.mult(new Vector2Int(-5, -5)));
+
+            if (canvas != null && (camMvt.getX() != 0 || camMvt.getY() != 0)) canvas.repaint();
+
+            optionPanel.requestFocus(false);
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -438,6 +474,7 @@ public class ToolManager {
     public void paintData(Graphics g) {
         g.setColor(Color.decode("#050505"));
         for (Shape shape : shapes) {
+            if (shape == null) continue;
             boolean inProgress = false;
             int len = 0;
             int savedX = 0;
@@ -454,13 +491,13 @@ public class ToolManager {
                     } else {
                         //fill rectangle
                         if (inProgress) {
-                            fillRect(g, savedX, j, len, shape);
+                            fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, shape);
                             inProgress = false;
                         }
                     }
                 }
                 if (inProgress) {
-                    fillRect(g, savedX, j, len, shape);
+                    fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, shape);
                     inProgress = false;
                 }
             }
@@ -491,13 +528,13 @@ public class ToolManager {
                     } else {
                         //fill rectangle
                         if (inProgress) {
-                            fillRect(g, savedX, j, len, current);
+                            fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, current);
                             inProgress = false;
                         }
                     }
                 }
                 if (inProgress) {
-                    fillRect(g, savedX, j, len, current);
+                    fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, current);
                     inProgress = false;
                 }
             }
