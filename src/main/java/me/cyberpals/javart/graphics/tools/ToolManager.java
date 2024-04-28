@@ -1,5 +1,6 @@
 package me.cyberpals.javart.graphics.tools;
 
+import me.cyberpals.javart.graphics.components.tool.RmiInputGui;
 import me.cyberpals.javart.graphics.pictures.PictureManager;
 import me.cyberpals.javart.graphics.pictures.types.Picture;
 import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
@@ -32,6 +33,8 @@ public class ToolManager {
 
     JPanel canvas, optionPanel;
 
+    Boolean refresh = true;
+
     // atributes to help events
 
     Shape current;
@@ -45,6 +48,7 @@ public class ToolManager {
 
     SaveManager saveManager;
     ClientServerRmiShape clientRmiShape;
+    Boolean rmiSetup = false;
     //methods for handling Camera
     MovementKey cameraMovement = new MovementKey(KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT);
     Vector2Int cameraOffset = new Vector2Int(0, 0);
@@ -83,6 +87,7 @@ public class ToolManager {
         this.toolDetails = toolDetails;
 
         resetDatas();
+        refresh = false;
 
         // set toolType
         switch (toolDetails) {
@@ -129,18 +134,58 @@ public class ToolManager {
                 }
 
                 break;
+            case RMI_LOAD:
+                toolType = ToolType.CLICK;
+                RmiInputGui rmiInputGui = new RmiInputGui(generateIcon(pictureManager.getPicture("Icon_info"), 64, 64), generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                if (!rmiSetup) {
+                    rmiInputGui.ask();
+                }
+                if (rmiSetup || !rmiInputGui.isCancelled()) {
+                    try {
+                        if (!rmiSetup) {
+                            clientRmiShape.initializeClient(rmiInputGui.getPort(), rmiInputGui.getIp());
+                            rmiSetup = true;
+                        }
+                        Shape s = clientRmiShape.receive("shape");
+                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
+                        s1 = s;
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                        setTool(ToolDetails.MOVE);
+                    }
+                }
+                break;
+            case RMI_SAVE:
+                toolType = ToolType.CLICK;
+                rmiInputGui = new RmiInputGui(generateIcon(pictureManager.getPicture("Icon_info"), 64, 64), generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                if (!rmiSetup)
+                    rmiInputGui.ask();
+
+                if (rmiSetup || !rmiInputGui.isCancelled()) {
+                    try {
+                        if (!rmiSetup) {
+                            clientRmiShape.initializeClient(rmiInputGui.getPort(), rmiInputGui.getIp());
+                            rmiSetup = true;
+                        }
+                        JOptionPane.showMessageDialog(null, "RMI setup success", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                        setTool(ToolDetails.MOVE);
+                    }
+                }
+                break;
             case COPY:
             case UNGROUP:
             case SAVE:
             case SELECT:
             case REMOVE:
-            case RMI_SAVE:
-            case RMI_LOAD:
                 toolType = ToolType.CLICK;
                 break;
         }
         if (optionPanel != null)
             optionPanel.repaint();
+
+        refresh = true;
     }
 
     //for click events
@@ -173,11 +218,11 @@ public class ToolManager {
     public void mainLoop() {
         while (true) {
             Vector2Int camMvt = cameraMovement.getMovement();
-            cameraOffset = cameraOffset.add(camMvt.mult(new Vector2Int(-5, -5)));
+            cameraOffset = cameraOffset.add(camMvt.mult(new Vector2Int(5, 5)));
 
             if (canvas != null && (camMvt.getX() != 0 || camMvt.getY() != 0)) canvas.repaint();
 
-            optionPanel.requestFocus(false);
+            if (refresh) optionPanel.requestFocus(false);
 
             try {
                 Thread.sleep(10);
@@ -220,6 +265,10 @@ public class ToolManager {
                 return pictureManager.getPicture("Load_local");
             case REMOVE:
                 return pictureManager.getPicture("Remove");
+            case RMI_LOAD:
+                return pictureManager.getPicture("Load_server");
+            case RMI_SAVE:
+                return pictureManager.getPicture("Save_server");
         }
         return null;
     }

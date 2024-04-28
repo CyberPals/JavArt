@@ -4,6 +4,8 @@ import me.cyberpals.javart.network.ISavableShape;
 import me.cyberpals.javart.network.SavableShape;
 import me.cyberpals.javart.shapes.Shape;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -60,14 +62,10 @@ public class ClientServerRmiShape implements IClientServerRmi<Shape> {
     }
 
     @Override
-    public Shape receive(String name) {
+    public Shape receive(String name) throws RemoteException, NotBoundException {
         Shape shape = null;
-        try {
-            ISavableShape savableShape = (ISavableShape) clientRegistry.lookup("savableShape");
-            shape = savableShape.loadShape();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ISavableShape savableShape = (ISavableShape) clientRegistry.lookup("savableShape");
+        shape = savableShape.loadShape();
         return shape;
     }
 }

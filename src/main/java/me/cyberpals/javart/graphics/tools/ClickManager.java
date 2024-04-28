@@ -171,6 +171,7 @@ public class ClickManager {
                         toolManager.canvas.repaint();
                         break;
                     case SAVE:
+                        toolManager.refresh = false;
                         Shape s = toolManager.getShape(new Vector2Int(e.getX() + toolManager.cameraOffset.getX(), e.getY() + toolManager.cameraOffset.getY()));
                         if (s == null) return;
                         //create file selection dialog
@@ -190,6 +191,7 @@ public class ClickManager {
                                 }
                             }
                         }
+                        toolManager.refresh = true;
                         break;
                     case LOAD:
                         //append current variable shape to the list
@@ -226,6 +228,36 @@ public class ClickManager {
                             toolManager.shapes.remove(sel);
                             toolManager.canvas.repaint();
                         }
+                        break;
+                    case RMI_SAVE:
+                        toolManager.refresh = false;
+                        Shape s2 = toolManager.getShape(new Vector2Int(e.getX() + toolManager.cameraOffset.getX(), e.getY() + toolManager.cameraOffset.getY()));
+                        if (s2 == null) return;
+                        try {
+                            toolManager.clientRmiShape.send(s2, "shape");
+                            JOptionPane.showMessageDialog(null, "Shape sent", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_info"), 64, 64));
+                            toolManager.refresh = true;
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Error while sending the shape", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_error"), 64, 64));
+                        }
+                        break;
+                    case RMI_LOAD:
+                        toolManager.refresh = false;
+                        try {
+                            Shape s3 = toolManager.clientRmiShape.receive("shape");
+                            if (s3 != null) {
+                                //recenter to cursor (and camera)
+                                s3.move(new Vector2Int(e.getX() - s3.getBegin().getX() + toolManager.cameraOffset.getX(), e.getY() - s3.getBegin().getY() + toolManager.cameraOffset.getY()));
+                                toolManager.shapes.add(s3);
+                                toolManager.canvas.repaint();
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Error while receiving the shape", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_error"), 64, 64));
+                            }
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(null, "Error while receiving the shape", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(toolManager.pictureManager.getPicture("Icon_error"), 64, 64));
+                        }
+                        toolManager.refresh = true;
+                        break;
                 }
                 break;
         }
