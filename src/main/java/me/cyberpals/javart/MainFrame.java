@@ -157,7 +157,7 @@ public class MainFrame extends JFrame {
         parser.addArgument("-h", new SingleArgument() {
             @Override
             public void parse() {
-                System.out.println("-s [port default=1099]\t executes the rmi server at the port addressed. if no ports are selected, the port will automatically be 1099 \n " +
+                System.out.println("-s [port default=1099]\t executes the rmi server at the port addressed. if no ports are selected, the port will automatically be 1099 \n" +
                         "-t\t  shows a shape in the terminal\n" +
                         "-e [ip default=localhost]\t sends a test shape to the server at port 1099 with the ip addressed. If no ip are selected, the ip address will automatically be localhost\n" +
                         "-r [ip default=localhost]\t asks to the server at port 1099 with the ip addressed, the test shape.  If no ip are selected, the ip address will automatically be localhost\n");
