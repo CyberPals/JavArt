@@ -254,7 +254,7 @@ public class ToolManager {
             case MOVE:
                 return pictureManager.getPicture("Move");
             case RESIZE:
-                return pictureManager.getPicture("Button");
+                return pictureManager.getPicture("Resize");
             case COPY:
                 return pictureManager.getPicture("Copy");
             case UNGROUP:
