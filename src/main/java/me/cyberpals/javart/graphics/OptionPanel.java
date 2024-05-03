@@ -76,13 +76,13 @@ public class OptionPanel extends JPanel {
                 toolManager.getPictureManager().getPicture("Button"),
                 toolManager.getPictureManager().getPicture("Save_server"),
                 toolManager,
-                ToolDetails.SAVE
+                ToolDetails.RMI_SAVE
         ));
         addButtonTool(new ToolButton(
                 toolManager.getPictureManager().getPicture("Button"),
                 toolManager.getPictureManager().getPicture("Load_server"),
                 toolManager,
-                ToolDetails.LOAD
+                ToolDetails.RMI_LOAD
         ));
     }
 

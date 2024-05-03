@@ -98,7 +98,7 @@ public class SidePanel extends JPanel {
         ));
         addButtonTool(new ToolButton(
                 toolManager.getPictureManager().getPicture("Button"),
-                toolManager.getPictureManager().getPicture("Button"),
+                toolManager.getPictureManager().getPicture("Resize"),
                 toolManager,
                 ToolDetails.RESIZE
         ));

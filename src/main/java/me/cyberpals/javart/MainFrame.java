@@ -18,6 +18,7 @@ import me.cyberpals.javart.vectors.Vector2Int;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainFrame extends JFrame {
 
@@ -30,7 +31,7 @@ public class MainFrame extends JFrame {
     ToolManager toolManager;
     PictureManager pictureManager;
 
-    public MainFrame() {
+    public MainFrame() throws IOException {
         super("JavArt");
 
         //setup diferent panels
@@ -52,10 +53,12 @@ public class MainFrame extends JFrame {
         //setup frame
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.setVisible(true);
+        this.setIconImage(Objects.requireNonNull(new ImageIcon(getClass().getResource("/logo.png")).getImage()));
+
         this.setSize(800, 600);
         this.setMinimumSize(new Dimension(800, 600));
-        this.setVisible(true);
-
         this.setLayout(new BorderLayout());
         this.add(optionPanel, BorderLayout.SOUTH);
         this.add(sidePanel, BorderLayout.WEST);
@@ -67,7 +70,7 @@ public class MainFrame extends JFrame {
         toolManager.mainLoop();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Parser parser = new Parser(args);
         ClientServerRmiShape clientServerRmiShape = new ClientServerRmiShape();
 
@@ -159,6 +162,7 @@ public class MainFrame extends JFrame {
         this.pictureManager.addPicture("Copy", 2, 2);
         this.pictureManager.addPicture("Ungroup", 3, 2);
         this.pictureManager.addPicture("Remove", 1, 2);
+        this.pictureManager.addPicture("Resize", 6, 2);
 
         //save
         this.pictureManager.addPicture("Save_local", 1, 1);
