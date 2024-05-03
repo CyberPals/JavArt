@@ -9,7 +9,6 @@ import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
 import me.cyberpals.javart.parser.Parser;
 import me.cyberpals.javart.parser.arguments.PairArgument;
 import me.cyberpals.javart.parser.arguments.SingleArgument;
-import me.cyberpals.javart.serialisation.SaveManager;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.shapes.operations.Union;
 import me.cyberpals.javart.shapes.simple.Oval;
@@ -23,17 +22,13 @@ import java.util.Objects;
 
 public class MainFrame extends JFrame {
 
+    static int serverPort = 1099;
     //panels
     CanvasPanel canvas;
     SidePanel sidePanel;
     OptionPanel optionPanel;
-
-
     ToolManager toolManager;
     PictureManager pictureManager;
-
-
-    static int serverPort = 1099;
 
     public MainFrame() throws IOException {
         super("JavArt");
@@ -126,7 +121,7 @@ public class MainFrame extends JFrame {
             @Override
             public void parse(String value) {
                 ClientServerRmiShape csrs = new ClientServerRmiShape();
-                csrs.initializeClient(1099,value);
+                csrs.initializeClient(1099, value);
 
                 Shape t1 = new Oval(
                         new Vector2Int(0, 0),
@@ -139,7 +134,7 @@ public class MainFrame extends JFrame {
                 Shape u = new Union(t1, t2);
                 u.drawShape();
                 u.showDetails();
-                csrs.send(u,"test");
+                csrs.send(u, "test");
             }
         });
 
@@ -153,10 +148,14 @@ public class MainFrame extends JFrame {
             @Override
             public void parse(String value) {
                 ClientServerRmiShape csrs = new ClientServerRmiShape();
-                csrs.initializeClient(1099,value);
-                Shape u = csrs.receive("test");
-                u.drawShape();
-                u.showDetails();
+                csrs.initializeClient(1099, value);
+                try {
+                    Shape u = csrs.receive("test");
+                    u.drawShape();
+                    u.showDetails();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         });
