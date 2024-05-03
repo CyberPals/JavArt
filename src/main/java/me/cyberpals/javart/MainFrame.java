@@ -65,7 +65,7 @@ public class MainFrame extends JFrame {
         this.add(canvas, BorderLayout.CENTER);
 
         this.setLocationRelativeTo(null);
-        //this.pack();
+        this.pack();
 
         toolManager.mainLoop();
     }
@@ -162,7 +162,7 @@ public class MainFrame extends JFrame {
         this.pictureManager.addPicture("Copy", 2, 2);
         this.pictureManager.addPicture("Ungroup", 3, 2);
         this.pictureManager.addPicture("Remove", 1, 2);
-        this.pictureManager.addPicture("Resize", 3, 2);
+        this.pictureManager.addPicture("Resize", 6, 2);
 
         //save
         this.pictureManager.addPicture("Save_local", 1, 1);

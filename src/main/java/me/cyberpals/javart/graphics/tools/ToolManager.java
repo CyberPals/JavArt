@@ -59,7 +59,7 @@ public class ToolManager {
     public ToolManager(PictureManager pictureManager) {
         this.pictureManager = pictureManager;
         shapes = new ArrayList<>();
-        setTool(ToolDetails.OVAL);
+        setTool(ToolDetails.RECTANGLE);
 
         //setup managers
         saveManager = new SaveManager();
