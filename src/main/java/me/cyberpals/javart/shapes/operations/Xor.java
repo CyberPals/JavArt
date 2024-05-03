@@ -3,7 +3,7 @@ package me.cyberpals.javart.shapes.operations;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.vectors.Vector2Int;
 
-public class Xor extends Operation{
+public class Xor extends Operation {
     public Xor(Shape shape1, Shape shape2) {
         super(shape1, shape2);
     }
@@ -20,5 +20,10 @@ public class Xor extends Operation{
         System.out.println("  ".repeat(offset) + " + Xor:(" + getBegin() + "," + getEnd() + ")");
         child1.showDetails(offset + 1);
         child2.showDetails(offset + 1);
+    }
+
+    @Override
+    public Shape copy() {
+        return new Xor(child1.copy(), child2.copy());
     }
 }

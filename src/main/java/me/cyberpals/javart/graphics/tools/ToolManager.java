@@ -1,21 +1,23 @@
 package me.cyberpals.javart.graphics.tools;
 
+import me.cyberpals.javart.graphics.components.tool.RmiInputGui;
 import me.cyberpals.javart.graphics.pictures.PictureManager;
 import me.cyberpals.javart.graphics.pictures.types.Picture;
+import me.cyberpals.javart.network.wrapper.ClientServerRmiShape;
+import me.cyberpals.javart.serialisation.SaveManager;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.shapes.operations.Difference;
 import me.cyberpals.javart.shapes.operations.Intersection;
 import me.cyberpals.javart.shapes.operations.Union;
 import me.cyberpals.javart.shapes.operations.Xor;
-import me.cyberpals.javart.shapes.simple.Oval;
-import me.cyberpals.javart.shapes.simple.Rectangle;
-import me.cyberpals.javart.shapes.simple.Rhombus;
-import me.cyberpals.javart.shapes.simple.Triangle;
 import me.cyberpals.javart.vectors.Vector2Int;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ToolManager {
@@ -31,36 +33,67 @@ public class ToolManager {
 
     JPanel canvas, optionPanel;
 
+    Boolean refresh = true;
+
     // atributes to help events
 
     Shape current;
     Shape s1, s2;
+
+    Vector2Int customBegin, customEnd;
+
     int fuseIndex = 0;
 
+    //attributes for save purpose
+
+    SaveManager saveManager;
+    ClientServerRmiShape clientRmiShape;
+    Boolean rmiSetup = false;
+    //methods for handling Camera
+    MovementKey cameraMovement = new MovementKey(KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT);
+    Vector2Int cameraOffset = new Vector2Int(0, 0);
+
+    //managers for tools
+    ClickManager clickManager;
 
     public ToolManager(PictureManager pictureManager) {
         this.pictureManager = pictureManager;
         shapes = new ArrayList<>();
-        setTool(ToolDetails.OVAL);
+        setTool(ToolDetails.RECTANGLE);
+
+        //setup managers
+        saveManager = new SaveManager();
+        clientRmiShape = new ClientServerRmiShape();
+        clickManager = new ClickManager(this);
     }
 
+
+    //methods for handling mouse events
 
     private void resetDatas() {
         current = null;
         s1 = null;
         s2 = null;
         fuseIndex = 0;
+
+        if (canvas != null) canvas.repaint();
+    }
+
+    private ImageIcon generateIcon(Picture picture, int width, int height) {
+        return new ImageIcon(picture.getPicture().getScaledInstance(width, height, Image.SCALE_DEFAULT));
     }
 
     public void setTool(ToolDetails toolDetails) {
         this.toolDetails = toolDetails;
 
         resetDatas();
+        refresh = false;
 
         // set toolType
         switch (toolDetails) {
             case MOVE:
             case MOVE_OBJECT:
+            case RESIZE:
                 toolType = ToolType.MOVE;
                 break;
             case OVAL:
@@ -75,103 +108,127 @@ public class ToolManager {
             case XOR:
                 toolType = ToolType.COMBINE;
                 break;
+            case LOAD:
+                toolType = ToolType.CLICK;
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Load shape");
+
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Shape files", "toast");
+                fileChooser.setFileFilter(filter);
+
+                int select = fileChooser.showOpenDialog(null);
+                if (select == JFileChooser.APPROVE_OPTION) {
+                    String path = fileChooser.getSelectedFile().getAbsolutePath();
+                    //open file
+                    try {
+                        Shape s = saveManager.loadShape(path);
+                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
+                        s1 = s;
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "File not found", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                    } catch (ClassNotFoundException ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                    }
+                } else {
+                    setTool(ToolDetails.MOVE);
+                }
+
+                break;
+            case RMI_LOAD:
+                toolType = ToolType.CLICK;
+                RmiInputGui rmiInputGui = new RmiInputGui(generateIcon(pictureManager.getPicture("Icon_info"), 64, 64), generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                if (!rmiSetup) {
+                    rmiInputGui.ask();
+                }
+                if (rmiSetup || !rmiInputGui.isCancelled()) {
+                    try {
+                        if (!rmiSetup) {
+                            clientRmiShape.initializeClient(rmiInputGui.getPort(), rmiInputGui.getIp());
+                            rmiSetup = true;
+                        }
+                        Shape s = clientRmiShape.receive("shape");
+                        JOptionPane.showMessageDialog(null, "Shape loaded", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
+                        s1 = s;
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                        setTool(ToolDetails.MOVE);
+                    }
+                }
+                break;
+            case RMI_SAVE:
+                toolType = ToolType.CLICK;
+                rmiInputGui = new RmiInputGui(generateIcon(pictureManager.getPicture("Icon_info"), 64, 64), generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                if (!rmiSetup)
+                    rmiInputGui.ask();
+
+                if (rmiSetup || !rmiInputGui.isCancelled()) {
+                    try {
+                        if (!rmiSetup) {
+                            clientRmiShape.initializeClient(rmiInputGui.getPort(), rmiInputGui.getIp());
+                            rmiSetup = true;
+                        }
+                        JOptionPane.showMessageDialog(null, "RMI setup success", "Success", JOptionPane.INFORMATION_MESSAGE, generateIcon(pictureManager.getPicture("Icon_info"), 64, 64));
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(null, "Unknown error", "Error", JOptionPane.ERROR_MESSAGE, generateIcon(pictureManager.getPicture("Icon_error"), 64, 64));
+                        setTool(ToolDetails.MOVE);
+                    }
+                }
+                break;
+            case COPY:
+            case UNGROUP:
+            case SAVE:
             case SELECT:
             case REMOVE:
-            case SAVE:
-            case LOAD:
-            case RMI_SAVE:
-            case RMI_LOAD:
                 toolType = ToolType.CLICK;
                 break;
         }
         if (optionPanel != null)
             optionPanel.repaint();
+
+        refresh = true;
     }
 
-    //methods for handling mouse events
-
+    //for click events
     public void mousePressed(MouseEvent e) {
-        switch (toolType) {
-            case MOVE:
-                current = getShape(new Vector2Int(e.getX(), e.getY()));
-                if (current != null) {
-                    deltaPos = new Vector2Int(e.getX() - current.getBegin().getX(), e.getY() - current.getBegin().getY());
-                }
-                break;
-            case SHAPE:
-                //create new shape
-                switch (toolDetails) {
-                    case OVAL:
-                        current = new Oval(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX() + 1, e.getY() + 1));
-                        break;
-                    case RECTANGLE:
-                        current = new Rectangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
-                        break;
-                    case RHOMBUS:
-                        current = new Rhombus(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
-                        break;
-                    case TRIANGLE:
-                        current = new Triangle(new Vector2Int(e.getX(), e.getY()), new Vector2Int(e.getX(), e.getY()));
-                        break;
-                }
-                canvas.repaint();
-                break;
-        }
+        clickManager.mousePressed(e);
     }
 
     public void mouseReleased(MouseEvent e) {
-        switch (toolType) {
-            case MOVE:
-                if (current != null) {
-                    current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
-                    canvas.repaint();
-                }
-                break;
-            case SHAPE:
-                addNewShapeFromCurrent();
-                current = null;
-                canvas.repaint();
-                break;
-        }
+        clickManager.mouseReleased(e);
     }
 
     public void mouseDragged(MouseEvent e) {
-        switch (toolType) {
-            case MOVE:
-                if (current != null) {
-                    current.move(new Vector2Int(e.getX() - current.getBegin().getX() - deltaPos.getX(), e.getY() - current.getBegin().getY() - deltaPos.getY()));
-                    canvas.repaint();
-                }
-                break;
-            case SHAPE:
-                current.setEnd(new Vector2Int(e.getX(), e.getY()));
-                canvas.repaint();
-                break;
-        }
+        clickManager.mouseDragged(e);
     }
 
     public void mouseClicked(MouseEvent e) {
-        switch (toolType) {
-            case COMBINE:
-                if (fuseIndex == 0) {
-                    s1 = getShape(new Vector2Int(e.getX(), e.getY()));
-                    if (s1 != null) {
-                        fuseIndex = 1;
-                        canvas.repaint();
-                    }
-                } else {
-                    s2 = getShapeNot(new Vector2Int(e.getX(), e.getY()), s1);
-                    if (s2 != null) {
-                        fuseSelectedShape();
-                        fuseIndex = 0;
-                        s1 = null;
-                        s2 = null;
-                        canvas.repaint();
-                    }
-                }
-                break;
-            case CLICK:
-                break;
+        clickManager.mouseClicked(e);
+    }
+
+    //methods for handling key events
+    public void keyPressed(KeyEvent e) {
+        cameraMovement.keyPressed(e.getKeyCode());
+    }
+
+    public void keyReleased(KeyEvent e) {
+        cameraMovement.keyReleased(e.getKeyCode());
+    }
+
+    //main loop
+    public void mainLoop() {
+        while (true) {
+            Vector2Int camMvt = cameraMovement.getMovement();
+            cameraOffset = cameraOffset.add(camMvt.mult(new Vector2Int(5, 5)));
+
+            if (canvas != null && (camMvt.getX() != 0 || camMvt.getY() != 0)) canvas.repaint();
+
+            if (refresh) optionPanel.requestFocus(false);
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -179,29 +236,41 @@ public class ToolManager {
     public Picture getToolPics() {
         switch (toolDetails) {
             case OVAL:
-                return pictureManager.getPicture("t1");
+                return pictureManager.getPicture("Oval");
             case RECTANGLE:
-                return pictureManager.getPicture("t2");
+                return pictureManager.getPicture("Rectangle");
             case RHOMBUS:
-                return pictureManager.getPicture("t3");
+                return pictureManager.getPicture("Rhombus");
             case TRIANGLE:
-                return pictureManager.getPicture("t4");
+                return pictureManager.getPicture("Triangle");
             case DIFERENCE:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Difference");
             case INTERSECT:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Intersection");
             case UNION:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Union");
             case XOR:
-                return pictureManager.getPicture("t5");
+                return pictureManager.getPicture("Xor");
             case MOVE:
-                return pictureManager.getPicture("example1");
+                return pictureManager.getPicture("Move");
+            case RESIZE:
+                return pictureManager.getPicture("Resize");
+            case COPY:
+                return pictureManager.getPicture("Copy");
+            case UNGROUP:
+                return pictureManager.getPicture("Ungroup");
+            case SAVE:
+                return pictureManager.getPicture("Save_local");
+            case LOAD:
+                return pictureManager.getPicture("Load_local");
+            case REMOVE:
+                return pictureManager.getPicture("Remove");
+            case RMI_LOAD:
+                return pictureManager.getPicture("Load_server");
+            case RMI_SAVE:
+                return pictureManager.getPicture("Save_server");
         }
         return null;
-    }
-
-    public void updateCurrentAddingShape() {
-
     }
 
     public void addNewShapeFromCurrent() {
@@ -209,7 +278,7 @@ public class ToolManager {
     }
 
     public void removeSelectedShape(Shape s) {
-
+        if (s != null) shapes.remove(s);
     }
 
     public void fuseSelectedShape() {
@@ -263,27 +332,80 @@ public class ToolManager {
         return pictureManager;
     }
 
+    private void fillRect(Graphics g, int x, int y, int w, Shape current) {
+        if (current == s1) {
+            g.setColor(Color.decode("#B50505"));
+        } else {
+            g.setColor(Color.decode("#050505"));
+        }
+        g.fillRect(x, y, w, 1);
+    }
+
     public void paintData(Graphics g) {
+        g.setColor(Color.decode("#050505"));
         for (Shape shape : shapes) {
-            for (int i = shape.getBegin().getX(); i < shape.getEnd().getX(); i++) {
-                for (int j = shape.getBegin().getY(); j < shape.getEnd().getY(); j++) {
+            if (shape == null) continue;
+            boolean inProgress = false;
+            int len = 0;
+            int savedX = 0;
+            for (int j = shape.getBegin().getY(); j < shape.getEnd().getY(); j++) {
+                for (int i = shape.getBegin().getX(); i < shape.getEnd().getX(); i++) {
                     if (shape.test(new Vector2Int(i, j))) {
-                        if (shape == s1) {
-                            g.setColor(Color.decode("#B50505"));
+                        if (!inProgress) {
+                            inProgress = true;
+                            len = 1;
+                            savedX = i;
                         } else {
-                            g.setColor(Color.decode("#050505"));
+                            len++;
                         }
-                        g.fillRect(i, j, 1, 1);
+                    } else {
+                        //fill rectangle
+                        if (inProgress) {
+                            fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, shape);
+                            inProgress = false;
+                        }
                     }
+                }
+                if (inProgress) {
+                    fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, shape);
+                    inProgress = false;
                 }
             }
         }
         if (current != null) {
-            for (int i = current.getBegin().getX(); i < current.getEnd().getX(); i++) {
-                for (int j = current.getBegin().getY(); j < current.getEnd().getY(); j++) {
+            //recalculate manually the coordinates
+            Vector2Int begin = new Vector2Int(
+                    Math.min(current.getBegin().getX(), current.getEnd().getX()),
+                    Math.min(current.getBegin().getY(), current.getEnd().getY())
+            );
+            Vector2Int end = new Vector2Int(
+                    Math.max(current.getBegin().getX(), current.getEnd().getX()),
+                    Math.max(current.getBegin().getY(), current.getEnd().getY())
+            );
+            boolean inProgress = false;
+            int len = 0;
+            int savedX = 0;
+            for (int j = begin.getY(); j < end.getY(); j++) {
+                for (int i = begin.getX(); i < end.getX(); i++) {
                     if (current.test(new Vector2Int(i, j))) {
-                        g.fillRect(i, j, 1, 1);
+                        if (!inProgress) {
+                            inProgress = true;
+                            len = 1;
+                            savedX = i;
+                        } else {
+                            len++;
+                        }
+                    } else {
+                        //fill rectangle
+                        if (inProgress) {
+                            fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, current);
+                            inProgress = false;
+                        }
                     }
+                }
+                if (inProgress) {
+                    fillRect(g, savedX - cameraOffset.getX(), j - cameraOffset.getY(), len, current);
+                    inProgress = false;
                 }
             }
         }

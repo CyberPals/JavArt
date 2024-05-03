@@ -3,7 +3,7 @@ package me.cyberpals.javart.shapes.operations;
 import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.vectors.Vector2Int;
 
-public class Difference extends Operation{
+public class Difference extends Operation {
     public Difference(Shape shape1, Shape shape2) {
         super(shape1, shape2);
     }
@@ -18,5 +18,10 @@ public class Difference extends Operation{
         System.out.println("  ".repeat(offset) + " + Difference:(" + getBegin() + "," + getEnd() + ")");
         child1.showDetails(offset + 1);
         child2.showDetails(offset + 1);
+    }
+
+    @Override
+    public Shape copy() {
+        return new Difference(child1.copy(), child2.copy());
     }
 }

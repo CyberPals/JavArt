@@ -4,6 +4,7 @@ public enum ToolDetails {
     // move
     MOVE,
     MOVE_OBJECT,
+    RESIZE,
 
     // shape
     OVAL,
@@ -20,6 +21,8 @@ public enum ToolDetails {
     // one click
     SELECT,
     REMOVE,
+    COPY,
+    UNGROUP,
     SAVE,
     LOAD,
     RMI_SAVE,

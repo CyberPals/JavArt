@@ -1,5 +1,6 @@
 package me.cyberpals.javart.shapes.simple;
 
+import me.cyberpals.javart.shapes.Shape;
 import me.cyberpals.javart.vectors.Vector2Int;
 
 public class Rectangle extends SimpleShape {
@@ -19,5 +20,10 @@ public class Rectangle extends SimpleShape {
     @Override
     public void showDetails(int offset) {
         System.out.println("  ".repeat(offset) + " + Rectangle:(" + getBegin() + "," + getEnd() + ")");
+    }
+
+    @Override
+    public Shape copy() {
+        return new Rectangle(getBegin(), getEnd());
     }
 }

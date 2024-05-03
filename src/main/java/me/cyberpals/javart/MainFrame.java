@@ -19,6 +19,7 @@ import me.cyberpals.javart.vectors.Vector2Int;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MainFrame extends JFrame {
 
@@ -31,14 +32,15 @@ public class MainFrame extends JFrame {
     ToolManager toolManager;
     PictureManager pictureManager;
 
+
     static int serverPort = 1099;
 
-    public MainFrame() {
+    public MainFrame() throws IOException {
         super("JavArt");
 
         //setup diferent panels
         try {
-            pictureManager = new PictureManager("/testing.png", 16, 16);
+            pictureManager = new PictureManager("/textures.png", 16, 16);
             setupTextures();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -55,10 +57,12 @@ public class MainFrame extends JFrame {
         //setup frame
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.setVisible(true);
+        this.setIconImage(Objects.requireNonNull(new ImageIcon(getClass().getResource("/logo.png")).getImage()));
+
         this.setSize(800, 600);
         this.setMinimumSize(new Dimension(800, 600));
-        this.setVisible(true);
-
         this.setLayout(new BorderLayout());
         this.add(optionPanel, BorderLayout.SOUTH);
         this.add(sidePanel, BorderLayout.WEST);
@@ -66,9 +70,11 @@ public class MainFrame extends JFrame {
 
         this.setLocationRelativeTo(null);
         this.pack();
+
+        toolManager.mainLoop();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Parser parser = new Parser(args);
         ClientServerRmiShape clientServerRmiShape = new ClientServerRmiShape();
 
@@ -173,13 +179,42 @@ public class MainFrame extends JFrame {
 
 
     private void setupTextures() {
-        this.pictureManager.addExtendablePicture("example1", 0, 1, 4, 4, 4, 4);
-        this.pictureManager.addExtendablePicture("example2", 1, 0, 4, 4, 4, 4);
-        this.pictureManager.addPicture("t1", 0, 2);
-        this.pictureManager.addPicture("t2", 1, 2);
-        this.pictureManager.addPicture("t3", 2, 2);
-        this.pictureManager.addPicture("t4", 3, 2);
-        this.pictureManager.addPicture("t5", 0, 3);
-        this.pictureManager.addExtendablePicture("button", 2, 0, 4, 4, 4, 4);
+        //shape
+        this.pictureManager.addPicture("Rectangle", 0, 0);
+        this.pictureManager.addPicture("Oval", 1, 0);
+        this.pictureManager.addPicture("Triangle", 2, 0);
+        this.pictureManager.addPicture("Rhombus", 3, 0);
+
+        //inter
+        this.pictureManager.addPicture("Union", 4, 0);
+        this.pictureManager.addPicture("Intersection", 5, 0);
+        this.pictureManager.addPicture("Difference", 6, 0);
+        this.pictureManager.addPicture("Xor", 7, 0);
+
+        //tools
+        this.pictureManager.addPicture("Move", 0, 1);
+        this.pictureManager.addPicture("Select", 0, 2);
+        this.pictureManager.addPicture("Copy", 2, 2);
+        this.pictureManager.addPicture("Ungroup", 3, 2);
+        this.pictureManager.addPicture("Remove", 1, 2);
+        this.pictureManager.addPicture("Resize", 6, 2);
+
+        //save
+        this.pictureManager.addPicture("Save_local", 1, 1);
+        this.pictureManager.addPicture("Load_local", 2, 1);
+        this.pictureManager.addPicture("Save_server", 3, 1);
+        this.pictureManager.addPicture("Load_server", 4, 1);
+
+
+        //UI
+        this.pictureManager.addExtendablePicture("Button", 5, 1, 4, 4, 4, 4);
+        this.pictureManager.addExtendablePicture("Left_panel", 6, 1, 2, 2, 2, 2);
+        this.pictureManager.addExtendablePicture("Down_panel", 7, 1, 2, 2, 2, 2);
+
+        //icons
+        this.pictureManager.addPicture("Icon_error", 4, 2);
+        this.pictureManager.addPicture("Icon_info", 5, 2);
+
+        this.pictureManager.addPicture("Blank", 7, 7);
     }
 }

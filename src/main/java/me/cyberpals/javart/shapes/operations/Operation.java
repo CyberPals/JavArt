@@ -31,9 +31,13 @@ public abstract class Operation extends Shape {
 
         Vector2Float denom = new Vector2Float(1f / (corner2.getX() - corner1.getX()), 1f / (corner2.getY() - corner1.getY()));
 
+        Vector2Int relative = shapePos.sub(corner1);
+        Vector2Float relativeFloat = new Vector2Float(relative.getX(), relative.getY());
+
+        Vector2Float ending = relativeFloat.mult(denom);
         return new Vector2Int(
-                (int) ((shapePos.getX() - corner1.getX()) * (corner2.getX() + deltaPos.getX() - corner1.getX()) * denom.getX()) + corner1.getX(),
-                (int) ((shapePos.getY() - corner1.getY()) * (corner2.getY() + deltaPos.getY() - corner1.getY()) * denom.getY()) + corner1.getY()
+                (int) ((ending.getX() * (corner2.getX() - corner1.getX() + deltaPos.getX())) + corner1.getX()),
+                (int) ((ending.getY() * (corner2.getY() - corner1.getY() + deltaPos.getY())) + corner1.getY())
         );
     }
 
@@ -44,19 +48,27 @@ public abstract class Operation extends Shape {
         Vector2Int shapeEnd = child1.getEnd();
         Vector2Int newShapeBegin = calculateResizePos(getBegin(), getEnd(), shapeBegin, dPos);
         Vector2Int newShapeEnd = calculateResizePos(getBegin(), getEnd(), shapeEnd, dPos);
-        child1.setBegin(newShapeBegin);
-        child1.setEnd(newShapeEnd);
+        child1.move(newShapeBegin.sub(shapeBegin));
+        child1.resize(newShapeEnd.add(shapeBegin).sub(shapeEnd).sub(newShapeBegin));
 
         //shape 2
         shapeBegin = child2.getBegin();
         shapeEnd = child2.getEnd();
         newShapeBegin = calculateResizePos(getBegin(), getEnd(), shapeBegin, dPos);
         newShapeEnd = calculateResizePos(getBegin(), getEnd(), shapeEnd, dPos);
-        child2.setBegin(newShapeBegin);
-        child2.setEnd(newShapeEnd);
+        child2.move(newShapeBegin.sub(shapeBegin));
+        child2.resize(newShapeEnd.add(shapeBegin).sub(shapeEnd).sub(newShapeBegin));
 
         //operation
         setEnd(getEnd().add(dPos));
+    }
+
+    public Shape getChild1() {
+        return child1;
+    }
+
+    public Shape getChild2() {
+        return child2;
     }
 
     @Override

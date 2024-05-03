@@ -53,11 +53,13 @@ public class CanvasPanel extends JPanel {
                 toolManager.mouseDragged(e);
             }
         });
+
+        this.setFocusable(false);
     }
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(instance.getWidth() - 150, instance.getHeight() - 100);
+        return new Dimension(instance.getWidth() - 100, instance.getHeight() - 50);
     }
 
     @Override
